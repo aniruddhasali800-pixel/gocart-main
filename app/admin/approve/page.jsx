@@ -1,5 +1,5 @@
 'use client'
-import { storesDummyData } from "@/assets/assets"
+import api from "@/lib/api"
 import StoreInfo from "@/components/admin/StoreInfo"
 import Loading from "@/components/Loading"
 import { useEffect, useState } from "react"
@@ -10,16 +10,26 @@ export default function AdminApprove() {
     const [stores, setStores] = useState([])
     const [loading, setLoading] = useState(true)
 
-
     const fetchStores = async () => {
-        setStores(storesDummyData)
-        setLoading(false)
+        try {
+            const data = await api.getAllStores();
+            if (data.success) {
+                // Filter to show only pending stores
+                setStores(data.stores.filter(s => s.status === 'pending'));
+            }
+        } catch (error) {
+            toast.error(error.message);
+        } finally {
+            setLoading(false);
+        }
     }
 
     const handleApprove = async ({ storeId, status }) => {
-        // Logic to approve a store
-
-
+        const data = await api.approveStore(storeId, status);
+        if (data.success) {
+            toast.success(`Store ${status}`);
+            setStores(prev => prev.filter(s => s.id !== storeId));
+        }
     }
 
     useEffect(() => {

@@ -1,28 +1,66 @@
 'use client'
 import { useEffect, useState } from "react"
+import { useRouter, usePathname } from "next/navigation"
 import Loading from "../Loading"
-import Link from "next/link"
-import { ArrowRightIcon } from "lucide-react"
 import AdminNavbar from "./AdminNavbar"
 import AdminSidebar from "./AdminSidebar"
 
 const AdminLayout = ({ children }) => {
-
+    const router   = useRouter()
+    const pathname = usePathname()
     const [isAdmin, setIsAdmin] = useState(false)
     const [loading, setLoading] = useState(true)
 
-    const fetchIsAdmin = async () => {
-        setIsAdmin(true)
-        setLoading(false)
-    }
+    // Skip auth for login page
+    const isLoginPage = pathname === '/admin/login'
 
     useEffect(() => {
-        fetchIsAdmin()
-    }, [])
+        if (isLoginPage) {
+            setLoading(false)
+            return
+        }
 
-    return loading ? (
-        <Loading />
-    ) : isAdmin ? (
+        // हर navigation पर fresh auth check — state reset करो
+        setLoading(true)
+        setIsAdmin(false)
+
+        const token = localStorage.getItem('adminToken')
+        if (!token) {
+            router.replace('/admin/login')
+            setLoading(false)
+            return
+        }
+
+        // Verify token with backend
+        const BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'
+        fetch(`${BASE_URL}/api/admin/auth/profile`, {
+            headers: { Authorization: `Bearer ${token}` },
+        })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    setIsAdmin(true)
+                } else {
+                    localStorage.removeItem('adminToken')
+                    localStorage.removeItem('adminData')
+                    router.replace('/admin/login')
+                }
+            })
+            .catch(() => {
+                // If backend unreachable but token exists, still allow (offline mode)
+                setIsAdmin(true)
+            })
+            .finally(() => setLoading(false))
+    }, [pathname])  // ← pathname change होने पर re-run होगा
+
+    // Login page पर कोई layout नहीं, सिर्फ page render
+    if (isLoginPage) return <>{children}</>
+
+    if (loading) return <Loading />
+
+    if (!isAdmin) return null
+
+    return (
         <div className="flex flex-col h-screen">
             <AdminNavbar />
             <div className="flex flex-1 items-start h-full overflow-y-scroll no-scrollbar">
@@ -31,13 +69,6 @@ const AdminLayout = ({ children }) => {
                     {children}
                 </div>
             </div>
-        </div>
-    ) : (
-        <div className="min-h-screen flex flex-col items-center justify-center text-center px-6">
-            <h1 className="text-2xl sm:text-4xl font-semibold text-slate-400">You are not authorized to access this page</h1>
-            <Link href="/" className="bg-slate-700 text-white flex items-center gap-2 mt-8 p-2 px-6 max-sm:text-sm rounded-full">
-                Go to home <ArrowRightIcon size={18} />
-            </Link>
         </div>
     )
 }

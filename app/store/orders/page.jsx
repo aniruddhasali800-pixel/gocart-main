@@ -1,7 +1,8 @@
 'use client'
 import { useEffect, useState } from "react"
 import Loading from "@/components/Loading"
-import { orderDummyData } from "@/assets/assets"
+import api from "@/lib/api"
+import toast from "react-hot-toast"
 
 export default function StoreOrders() {
     const [orders, setOrders] = useState([])
@@ -11,14 +12,24 @@ export default function StoreOrders() {
 
 
     const fetchOrders = async () => {
-       setOrders(orderDummyData)
-       setLoading(false)
+        try {
+            const data = await api.getStoreOrders();
+            if (data.success) {
+                setOrders(data.orders);
+            }
+        } catch (error) {
+            toast.error(error.message);
+        } finally {
+            setLoading(false);
+        }
     }
 
     const updateOrderStatus = async (orderId, status) => {
-        // Logic to update the status of an order
-
-
+        const data = await api.updateOrderStatus(orderId, status);
+        if (data.success) {
+            toast.success("Order status updated!");
+            setOrders(orders.map(o => o.id === orderId ? { ...o, status: data.status } : o));
+        }
     }
 
     const openModal = (order) => {
@@ -62,7 +73,7 @@ export default function StoreOrders() {
                                     <td className="pl-6 text-green-600" >
                                         {index + 1}
                                     </td>
-                                    <td className="px-4 py-3">{order.user?.name}</td>
+                                    <td className="px-4 py-3">{order.address?.name || '—'}</td>
                                     <td className="px-4 py-3 font-medium text-slate-800">${order.total}</td>
                                     <td className="px-4 py-3">{order.paymentMethod}</td>
                                     <td className="px-4 py-3">
@@ -107,8 +118,8 @@ export default function StoreOrders() {
                         {/* Customer Details */}
                         <div className="mb-4">
                             <h3 className="font-semibold mb-2">Customer Details</h3>
-                            <p><span className="text-green-700">Name:</span> {selectedOrder.user?.name}</p>
-                            <p><span className="text-green-700">Email:</span> {selectedOrder.user?.email}</p>
+                            <p><span className="text-green-700">Name:</span> {selectedOrder.address?.name || '—'}</p>
+                            <p><span className="text-green-700">Email:</span> {selectedOrder.address?.email || '—'}</p>
                             <p><span className="text-green-700">Phone:</span> {selectedOrder.address?.phone}</p>
                             <p><span className="text-green-700">Address:</span> {`${selectedOrder.address?.street}, ${selectedOrder.address?.city}, ${selectedOrder.address?.state}, ${selectedOrder.address?.zip}, ${selectedOrder.address?.country}`}</p>
                         </div>

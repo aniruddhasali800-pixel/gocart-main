@@ -1,9 +1,9 @@
 'use client'
+import api from "@/lib/api"
 import { useEffect, useState } from "react"
 import { toast } from "react-hot-toast"
 import Image from "next/image"
 import Loading from "@/components/Loading"
-import { productDummyData } from "@/assets/assets"
 
 export default function StoreManageProducts() {
 
@@ -13,14 +13,24 @@ export default function StoreManageProducts() {
     const [products, setProducts] = useState([])
 
     const fetchProducts = async () => {
-        setProducts(productDummyData)
-        setLoading(false)
+        try {
+            const storeRes = await api.getMyStore();
+            if (storeRes.success && storeRes.store) {
+                const data = await api.getStoreProducts(storeRes.store.id);
+                setProducts(data.products || []);
+            }
+        } catch (error) {
+            toast.error(error.message);
+        } finally {
+            setLoading(false);
+        }
     }
 
     const toggleStock = async (productId) => {
-        // Logic to toggle the stock of a product
-
-
+        const data = await api.toggleStock(productId);
+        if (data.success) {
+            setProducts(products.map(p => p.id === productId ? { ...p, inStock: data.inStock } : p));
+        }
     }
 
     useEffect(() => {

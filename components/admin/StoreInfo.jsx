@@ -5,7 +5,13 @@ import { MapPin, Mail, Phone } from "lucide-react"
 const StoreInfo = ({store}) => {
     return (
         <div className="flex-1 space-y-2 text-sm">
-            <Image width={100} height={100} src={store.logo} alt={store.name} className="max-w-20 max-h-20 object-contain shadow rounded-full max-sm:mx-auto" />
+            {store.logo ? (
+                <Image width={100} height={100} src={store.logo} alt={store.name} className="w-20 h-20 object-contain shadow rounded-full max-sm:mx-auto" />
+            ) : (
+                <div className="w-20 h-20 rounded-full bg-slate-200 flex items-center justify-center shadow max-sm:mx-auto">
+                    <span className="text-slate-500 text-3xl font-bold">{store.name?.[0] || 'S'}</span>
+                </div>
+            )}
             <div className="flex flex-col sm:flex-row gap-3 items-center">
                 <h3 className="text-xl font-semibold text-slate-800"> {store.name} </h3>
                 <span className="text-sm">@{store.username}</span>
@@ -29,10 +35,16 @@ const StoreInfo = ({store}) => {
             <p className="flex items-center gap-2"><Mail size={16} />  {store.email}</p>
             <p className="text-slate-700 mt-5">Applied  on <span className="text-xs">{new Date(store.createdAt).toLocaleDateString()}</span> by</p>
             <div className="flex items-center gap-2 text-sm ">
-                <Image width={36} height={36} src={store.user.image} alt={store.user.name} className="w-9 h-9 rounded-full" />
+                <Image 
+                    width={36} 
+                    height={36} 
+                    src={store.user?.image || 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=facearea&facepad=2&w=256&h=256&q=80'} 
+                    alt={store.user?.name || 'Seller'} 
+                    className="w-9 h-9 rounded-full object-cover" 
+                />
                 <div>
-                    <p className="text-slate-600 font-medium">{store.user.name}</p>
-                    <p className="text-slate-400">{store.user.email}</p>
+                    <p className="text-slate-600 font-medium">{store.user?.name || 'Unknown Seller'}</p>
+                    <p className="text-slate-400">{store.user?.email || 'No Email'}</p>
                 </div>
             </div>
         </div>

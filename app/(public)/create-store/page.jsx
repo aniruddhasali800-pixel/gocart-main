@@ -4,8 +4,11 @@ import { useEffect, useState } from "react"
 import Image from "next/image"
 import toast from "react-hot-toast"
 import Loading from "@/components/Loading"
+import api from "@/lib/api"
+import { useRouter } from "next/navigation"
 
 export default function CreateStore() {
+    const router = useRouter()
 
     const [alreadySubmitted, setAlreadySubmitted] = useState(false)
     const [status, setStatus] = useState("")
@@ -18,6 +21,8 @@ export default function CreateStore() {
         description: "",
         email: "",
         contact: "",
+        phone: "",
+        gstNumber: "",
         address: "",
         image: ""
     })
@@ -27,17 +32,56 @@ export default function CreateStore() {
     }
 
     const fetchSellerStatus = async () => {
-        // Logic to check if the store is already submitted
-
-
-        setLoading(false)
+        try {
+            const res = await api.getMyStore();
+            if (res.success && res.store) {
+                setAlreadySubmitted(true);
+                setStatus(res.store.status);
+                if (res.store.status === 'pending') {
+                    setMessage("Your store application is pending approval.");
+                } else if (res.store.status === 'approved') {
+                    setMessage("Your store is approved!");
+                    setTimeout(() => router.push('/store'), 3000);
+                } else {
+                    setMessage("Your store application was rejected.");
+                }
+            }
+        } catch (error) {
+            // No store found, just stop loading to show form
+        } finally {
+            setLoading(false);
+        }
     }
 
     const onSubmitHandler = async (e) => {
         e.preventDefault()
-        // Logic to submit the store details
+        try {
+            let logoUrl = "";
+            if (storeInfo.image) {
+                const uploadRes = await api.uploadImage(storeInfo.image);
+                logoUrl = uploadRes.url;
+            }
 
+            const res = await api.createStore({
+                name: storeInfo.name,
+                username: storeInfo.username,
+                description: storeInfo.description,
+                email: storeInfo.email,
+                contact: storeInfo.contact,
+                phone: storeInfo.phone,
+                gstNumber: storeInfo.gstNumber,
+                address: storeInfo.address,
+                logo: logoUrl
+            });
 
+            if (res.success) {
+                setAlreadySubmitted(true);
+                setStatus("pending");
+                setMessage("Store submitted successfully! Awaiting approval.");
+            }
+        } catch (error) {
+            throw new Error(error.message || "Failed to submit store");
+        }
     }
 
     useEffect(() => {
@@ -73,11 +117,17 @@ export default function CreateStore() {
                         <p>Email</p>
                         <input name="email" onChange={onChangeHandler} value={storeInfo.email} type="email" placeholder="Enter your store email" className="border border-slate-300 outline-slate-400 w-full max-w-lg p-2 rounded" />
 
-                        <p>Contact Number</p>
-                        <input name="contact" onChange={onChangeHandler} value={storeInfo.contact} type="text" placeholder="Enter your store contact number" className="border border-slate-300 outline-slate-400 w-full max-w-lg p-2 rounded" />
+                        <p>Contact / Alternate Phone</p>
+                        <input name="contact" onChange={onChangeHandler} value={storeInfo.contact} type="text" placeholder="Enter alternate contact" className="border border-slate-300 outline-slate-400 w-full max-w-lg p-2 rounded" />
+
+                        <p>Phone Number</p>
+                        <input name="phone" required onChange={onChangeHandler} value={storeInfo.phone} type="text" placeholder="Enter your phone number" className="border border-slate-300 outline-slate-400 w-full max-w-lg p-2 rounded" />
+
+                        <p>GST Number</p>
+                        <input name="gstNumber" required onChange={onChangeHandler} value={storeInfo.gstNumber} type="text" placeholder="Enter your GST Number" className="border border-slate-300 outline-slate-400 w-full max-w-lg p-2 rounded" />
 
                         <p>Address</p>
-                        <textarea name="address" onChange={onChangeHandler} value={storeInfo.address} rows={5} placeholder="Enter your store address" className="border border-slate-300 outline-slate-400 w-full max-w-lg p-2 rounded resize-none" />
+                        <textarea name="address" required onChange={onChangeHandler} value={storeInfo.address} rows={5} placeholder="Enter your store address" className="border border-slate-300 outline-slate-400 w-full max-w-lg p-2 rounded resize-none" />
 
                         <button className="bg-slate-800 text-white px-12 py-2 rounded mt-10 mb-40 active:scale-95 hover:bg-slate-900 transition ">Submit</button>
                     </form>

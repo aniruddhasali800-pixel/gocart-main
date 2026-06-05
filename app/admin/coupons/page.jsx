@@ -1,9 +1,9 @@
 'use client'
+import api from "@/lib/api"
 import { useEffect, useState } from "react"
 import { format } from "date-fns"
 import toast from "react-hot-toast"
 import { DeleteIcon } from "lucide-react"
-import { couponDummyData } from "@/assets/assets"
 
 export default function AdminCoupons() {
 
@@ -20,24 +20,44 @@ export default function AdminCoupons() {
     })
 
     const fetchCoupons = async () => {
-        setCoupons(couponDummyData)
+        try {
+            const data = await api.getAllCoupons();
+            if (data.success) {
+                setCoupons(data.coupons);
+            }
+        } catch (error) {
+            toast.error(error.message);
+        }
     }
 
     const handleAddCoupon = async (e) => {
         e.preventDefault()
-        // Logic to add a coupon
-
-
+        const data = await api.createCoupon(newCoupon);
+        if (data.success) {
+            toast.success("Coupon added!");
+            setCoupons([data.coupon, ...coupons]);
+            setNewCoupon({
+                code: '',
+                description: '',
+                discount: '',
+                forNewUser: false,
+                forMember: false,
+                isPublic: false,
+                expiresAt: new Date()
+            });
+        }
     }
 
     const handleChange = (e) => {
         setNewCoupon({ ...newCoupon, [e.target.name]: e.target.value })
     }
 
-    const deleteCoupon = async (code) => {
-        // Logic to delete a coupon
-
-
+    const deleteCoupon = async (id) => {
+        const data = await api.deleteCoupon(id);
+        if (data.success) {
+            toast.success("Coupon deleted!");
+            setCoupons(coupons.filter(c => c.id !== id));
+        }
     }
 
     useEffect(() => {
@@ -122,7 +142,7 @@ export default function AdminCoupons() {
                                     <td className="py-3 px-4 text-slate-800">{coupon.forNewUser ? 'Yes' : 'No'}</td>
                                     <td className="py-3 px-4 text-slate-800">{coupon.forMember ? 'Yes' : 'No'}</td>
                                     <td className="py-3 px-4 text-slate-800">
-                                        <DeleteIcon onClick={() => toast.promise(deleteCoupon(coupon.code), { loading: "Deleting coupon..." })} className="w-5 h-5 text-red-500 hover:text-red-800 cursor-pointer" />
+                                        <DeleteIcon onClick={() => toast.promise(deleteCoupon(coupon.id), { loading: "Deleting coupon..." })} className="w-5 h-5 text-red-500 hover:text-red-800 cursor-pointer" />
                                     </td>
                                 </tr>
                             ))}

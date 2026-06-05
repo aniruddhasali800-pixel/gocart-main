@@ -3,8 +3,11 @@ import { assets } from "@/assets/assets"
 import Image from "next/image"
 import { useState } from "react"
 import { toast } from "react-hot-toast"
+import api from "@/lib/api"
+import { useRouter } from "next/navigation"
 
 export default function StoreAddProduct() {
+    const router = useRouter()
 
     const categories = ['Electronics', 'Clothing', 'Home & Kitchen', 'Beauty & Health', 'Toys & Games', 'Sports & Outdoors', 'Books & Media', 'Food & Drink', 'Hobbies & Crafts', 'Others']
 
@@ -25,8 +28,46 @@ export default function StoreAddProduct() {
 
     const onSubmitHandler = async (e) => {
         e.preventDefault()
-        // Logic to add a product
-        
+        try {
+            // Upload all provided images to Cloudinary
+            const imageUrls = [];
+            for (let i = 1; i <= 4; i++) {
+                if (images[i]) {
+                    const res = await api.uploadImage(images[i]);
+                    imageUrls.push(res.url);
+                }
+            }
+
+            if (imageUrls.length === 0) {
+                throw new Error("Please upload at least one image");
+            }
+
+            const res = await api.addProduct({
+                name: productInfo.name,
+                description: productInfo.description,
+                mrp: Number(productInfo.mrp),
+                price: Number(productInfo.price),
+                category: productInfo.category,
+                images: imageUrls
+            });
+
+            if (res.success) {
+                setProductInfo({
+                    name: "",
+                    description: "",
+                    mrp: 0,
+                    price: 0,
+                    category: "",
+                });
+                setImages({ 1: null, 2: null, 3: null, 4: null });
+                router.push('/store/manage-product');
+                return "Product added successfully";
+            } else {
+                throw new Error(res.message || "Failed to add product");
+            }
+        } catch (error) {
+            throw new Error(error.message);
+        }
     }
 
 
