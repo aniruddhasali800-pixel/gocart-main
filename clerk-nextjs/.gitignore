@@ -2,8 +2,6 @@
 
 # dependencies
 /node_modules
-backend/node_modules
-**/node_modules
 /.pnp
 .pnp.*
 .yarn/*
@@ -33,9 +31,7 @@ yarn-error.log*
 .pnpm-debug.log*
 
 # env files (can opt-in for committing if needed)
-.env
-.env.local
-.env.*
+.env*
 
 # vercel
 .vercel
@@ -43,5 +39,3 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
-
-/app/generated/prisma
