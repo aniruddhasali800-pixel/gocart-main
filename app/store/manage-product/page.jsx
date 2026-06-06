@@ -11,11 +11,13 @@ export default function StoreManageProducts() {
 
     const [loading, setLoading] = useState(true)
     const [products, setProducts] = useState([])
+    const [store, setStore] = useState(null)
 
     const fetchProducts = async () => {
         try {
             const storeRes = await api.getMyStore();
             if (storeRes.success && storeRes.store) {
+                setStore(storeRes.store);
                 const data = await api.getStoreProducts(storeRes.store.id);
                 setProducts(data.products || []);
             }
@@ -33,6 +35,21 @@ export default function StoreManageProducts() {
         }
     }
 
+    const handleStoreToggle = async () => {
+        if (!store) return;
+        const targetStatus = !store.isActive;
+        try {
+            const res = await api.updateStore({ isActive: targetStatus });
+            if (res.success && res.store) {
+                setStore(res.store);
+                toast.success(`Store is now ${targetStatus ? 'LIVE' : 'OFFLINE'}`);
+            }
+        } catch (error) {
+            toast.error(error.message || "Failed to update store status");
+            throw error;
+        }
+    }
+
     useEffect(() => {
             fetchProducts()
     }, [])
@@ -41,7 +58,27 @@ export default function StoreManageProducts() {
 
     return (
         <>
-            <h1 className="text-2xl text-slate-500 mb-5">Manage <span className="text-slate-800 font-medium">Products</span></h1>
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6 max-w-4xl">
+                <h1 className="text-2xl text-slate-500">Manage <span className="text-slate-800 font-medium">Products</span></h1>
+                {store && (
+                    <div className="flex items-center gap-3 bg-white border border-slate-200 px-4 py-2 rounded-xl shadow-sm">
+                        <span className="text-sm font-medium text-slate-600">Active Store Status:</span>
+                        <label className="relative inline-flex items-center cursor-pointer text-gray-900 gap-3">
+                            <input
+                                type="checkbox"
+                                className="sr-only peer"
+                                onChange={() => toast.promise(handleStoreToggle(), { loading: "Updating store status...", success: "Status updated!", error: "Failed to update" })}
+                                checked={store.isActive}
+                            />
+                            <div className="w-9 h-5 bg-slate-300 rounded-full peer peer-checked:bg-green-600 transition-colors duration-200"></div>
+                            <span className="dot absolute left-1 top-1 w-3 h-3 bg-white rounded-full transition-transform duration-200 ease-in-out peer-checked:translate-x-4"></span>
+                        </label>
+                        <span className={`text-xs font-bold px-2.5 py-0.5 rounded-full ${store.isActive ? 'bg-green-100 text-green-700 animate-pulse' : 'bg-rose-100 text-rose-700'}`}>
+                            {store.isActive ? 'LIVE' : 'OFFLINE'}
+                        </span>
+                    </div>
+                )}
+            </div>
             <table className="w-full max-w-4xl text-left  ring ring-slate-200  rounded overflow-hidden text-sm">
                 <thead className="bg-slate-50 text-gray-700 uppercase tracking-wider">
                     <tr>

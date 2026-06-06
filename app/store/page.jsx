@@ -17,6 +17,7 @@ export default function Dashboard() {
     const router   = useRouter()
 
     const [loading, setLoading] = useState(true)
+    const [store, setStore] = useState(null)
     const [dashboardData, setDashboardData] = useState({
         totalProducts:  0,
         totalEarnings:  0,
@@ -32,12 +33,31 @@ export default function Dashboard() {
 
     const fetchDashboardData = async () => {
         try {
-            const data = await api.getSellerDashboard()
-            if (data.success) setDashboardData(data.dashboard)
+            const [dashboardRes, storeRes] = await Promise.all([
+                api.getSellerDashboard(),
+                api.getMyStore()
+            ])
+            if (dashboardRes.success) setDashboardData(dashboardRes.dashboard)
+            if (storeRes.success) setStore(storeRes.store)
         } catch (error) {
             toast.error(error.message)
         } finally {
             setLoading(false)
+        }
+    }
+
+    const handleStoreToggle = async () => {
+        if (!store) return;
+        const targetStatus = !store.isActive;
+        try {
+            const res = await api.updateStore({ isActive: targetStatus });
+            if (res.success && res.store) {
+                setStore(res.store);
+                toast.success(`Store is now ${targetStatus ? 'LIVE' : 'OFFLINE'}`);
+            }
+        } catch (error) {
+            toast.error(error.message || "Failed to update store status");
+            throw error;
         }
     }
 
@@ -97,9 +117,29 @@ export default function Dashboard() {
 
     return (
         <div className="text-slate-500 mb-28">
-            <div className="mb-6">
-                <h1 className="text-2xl text-slate-800 font-semibold">Seller Dashboard</h1>
-                <p className="text-sm text-slate-400">Welcome back! Here's your store overview.</p>
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
+                <div>
+                    <h1 className="text-2xl text-slate-800 font-semibold">Seller Dashboard</h1>
+                    <p className="text-sm text-slate-400">Welcome back! Here's your store overview.</p>
+                </div>
+                {store && (
+                    <div className="flex items-center gap-3 bg-white border border-slate-200 px-4 py-2 rounded-xl shadow-sm">
+                        <span className="text-sm font-medium text-slate-600">Store Live Status:</span>
+                        <label className="relative inline-flex items-center cursor-pointer text-gray-900 gap-3">
+                            <input
+                                type="checkbox"
+                                className="sr-only peer"
+                                onChange={() => toast.promise(handleStoreToggle(), { loading: "Updating store status...", success: "Status updated!", error: "Failed to update" })}
+                                checked={store.isActive}
+                            />
+                            <div className="w-9 h-5 bg-slate-300 rounded-full peer peer-checked:bg-green-600 transition-colors duration-200"></div>
+                            <span className="dot absolute left-1 top-1 w-3 h-3 bg-white rounded-full transition-transform duration-200 ease-in-out peer-checked:translate-x-4"></span>
+                        </label>
+                        <span className={`text-xs font-bold px-2.5 py-0.5 rounded-full ${store.isActive ? 'bg-green-100 text-green-700 animate-pulse' : 'bg-rose-100 text-rose-700'}`}>
+                            {store.isActive ? 'LIVE' : 'OFFLINE'}
+                        </span>
+                    </div>
+                )}
             </div>
 
             {/* Top 4 cards */}

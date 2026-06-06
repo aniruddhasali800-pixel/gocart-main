@@ -9,12 +9,32 @@ const router = express.Router();
 // Public: fetch all in-stock products with store info
 router.get('/', async (req, res) => {
     try {
-        const { category, search, storeId, limit = 100, page = 1 } = req.query;
+        const { category, search, storeId, limit = 100, page = 1, all = 'false' } = req.query;
         const query = {};
 
         if (category) query.category = category;
-        if (storeId) query.storeId = storeId;
-        if (search) query.name = { $regex: search, $options: 'i' };
+
+        if (all === 'true') {
+            // Seller dashboard or admin fetch: no filtering by inStock or active stores
+            if (storeId) query.storeId = storeId;
+        } else {
+            // Public fetch: only show inStock products from approved & active stores
+            query.inStock = true;
+
+            if (storeId) {
+                // Check if this specific store is approved and active
+                const store = await Store.findOne({ _id: storeId, status: 'approved', isActive: true });
+                if (!store) {
+                    return res.json({ success: true, products: [] });
+                }
+                query.storeId = storeId;
+            } else {
+                // Fetch all approved and active stores
+                const activeStores = await Store.find({ status: 'approved', isActive: true }, '_id');
+                const activeStoreIds = activeStores.map(s => s._id);
+                query.storeId = { $in: activeStoreIds };
+            }
+        }
 
         const products = await Product.find(query)
             .populate({ path: 'storeId', model: Store, as: 'store' })
