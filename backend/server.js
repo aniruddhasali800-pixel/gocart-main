@@ -5,6 +5,7 @@ import cookieParser from 'cookie-parser';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import connectDB from './db.js';
+import Product from './models/Product.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname  = path.dirname(__filename);
@@ -23,6 +24,9 @@ import notificationRoutes from './routes/notificationRoutes.js';
 
 const app = express();
 const PORT = process.env.PORT || 5000;
+
+// Trust proxy (Render, Railway, etc.) so req.protocol returns 'https'
+app.set('trust proxy', 1);
 
 // ─── Middleware ───────────────────────────────────────────────
 app.use(cors({
@@ -54,6 +58,30 @@ app.get('/dashboard', (req, res) => {
 // ─── Health Check ─────────────────────────────────────────────
 app.get('/health', (req, res) => {
     res.json({ status: 'ok', message: 'GoCart API is running 🚀' });
+});
+
+// ─── One-time Migration: Fix localhost image URLs ─────────────
+app.get('/api/admin/fix-images', async (req, res) => {
+    try {
+        const backendUrl = process.env.BACKEND_URL || `${req.protocol}://${req.get('host')}`;
+        const products = await Product.find({ images: { $regex: 'http://localhost' } });
+        let updatedCount = 0;
+
+        for (const product of products) {
+            product.images = product.images.map(img => {
+                if (img.startsWith('http://localhost:5000')) {
+                    return img.replace('http://localhost:5000', backendUrl);
+                }
+                return img;
+            });
+            await product.save();
+            updatedCount++;
+        }
+
+        res.json({ success: true, message: `Fixed ${updatedCount} products`, backendUrl });
+    } catch (error) {
+        res.status(500).json({ success: false, message: error.message });
+    }
 });
 
 // ─── API Routes ───────────────────────────────────────────────

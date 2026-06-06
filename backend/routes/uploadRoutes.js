@@ -31,8 +31,9 @@ router.post('/', upload.single('image'), (req, res) => {
         if (!req.file) {
             return res.status(400).json({ success: false, message: 'No image uploaded' });
         }
-        // Return URL pointing to the static folder
-        const url = `${process.env.BACKEND_URL || 'http://localhost:5000'}/uploads/${req.file.filename}`;
+        // Return URL pointing to the static folder (dynamically from request)
+        const backendUrl = process.env.BACKEND_URL || `${req.protocol}://${req.get('host')}`;
+        const url = `${backendUrl}/uploads/${req.file.filename}`;
         res.json({ success: true, url });
     } catch (error) {
         res.status(500).json({ success: false, message: error.message });
