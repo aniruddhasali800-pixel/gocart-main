@@ -3,7 +3,7 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Image from 'next/image'
 
-const BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'
+const BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://gocart-main-4.onrender.com'
 
 export default function AdminLoginPage() {
     const router = useRouter()
@@ -33,7 +33,7 @@ export default function AdminLoginPage() {
                 setError(data.message || 'Invalid credentials')
             }
         } catch {
-            setError('Server error. Make sure backend is running on port 5000.')
+            setError('Server error. Make sure backend is running on the deployment URL.')
         } finally {
             setLoading(false)
         }

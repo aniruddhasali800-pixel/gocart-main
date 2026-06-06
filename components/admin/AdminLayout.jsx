@@ -32,7 +32,7 @@ const AdminLayout = ({ children }) => {
         }
 
         // Verify token with backend
-        const BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'
+        const BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://gocart-main-4.onrender.com'
         fetch(`${BASE_URL}/api/admin/auth/profile`, {
             headers: { Authorization: `Bearer ${token}` },
         })
