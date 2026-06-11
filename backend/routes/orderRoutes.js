@@ -137,6 +137,23 @@ router.patch('/:id/status', requireSeller, async (req, res) => {
     }
 });
 
+// ─── PATCH /api/orders/:id/tracking ─────────────────────────────
+// Seller: update order tracking details
+router.patch('/:id/tracking', requireSeller, async (req, res) => {
+    try {
+        const { trackingId, carrier, expectedDeliveryDate } = req.body;
+        const order = await Order.findOneAndUpdate(
+            { _id: req.params.id, storeId: req.storeId },
+            { trackingId, carrier, expectedDeliveryDate },
+            { new: true }
+        );
+        if (!order) return res.status(404).json({ success: false, message: 'Order not found' });
+        res.json({ success: true, message: 'Tracking details updated', order: normalizeOrder(order) });
+    } catch (error) {
+        res.status(500).json({ success: false, message: error.message });
+    }
+});
+
 // ─── Helper: normalize order for frontend ─────────────────────
 function normalizeOrder(order) {
     const obj = order.toObject({ virtuals: true });

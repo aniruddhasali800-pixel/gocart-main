@@ -33,7 +33,9 @@ app.use(cors({
     origin: [
         process.env.FRONTEND_URL || 'http://localhost:3000',
         /^https:\/\/.*\.vercel\.app$/,
-        'https://gocart-main-veiu.vercel.app'
+        'https://gocart-main-veiu.vercel.app',
+        'https://binarycomputers.shop',
+        'https://www.binarycomputers.shop'
     ],
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],

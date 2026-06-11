@@ -63,6 +63,18 @@ const orderSchema = new mongoose.Schema({
         type: [orderItemSchema],
         required: true,
     },
+    trackingId: {
+        type: String,
+        default: null,
+    },
+    carrier: {
+        type: String,
+        default: null,
+    },
+    expectedDeliveryDate: {
+        type: Date,
+        default: null,
+    },
 }, { timestamps: true });
 
 export default mongoose.model('Order', orderSchema);

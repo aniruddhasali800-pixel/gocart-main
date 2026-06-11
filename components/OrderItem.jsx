@@ -42,6 +42,16 @@ const OrderItem = ({ order }) => {
                                 </div>
                             </div>
                         ))}
+                        {order.trackingId && (
+                            <div className="mt-2 p-3 bg-slate-50 border border-slate-100 rounded text-xs space-y-1 w-max">
+                                <p className="font-semibold text-slate-700">Parcel Tracking</p>
+                                <p><span className="text-slate-500">Carrier:</span> {order.carrier || 'N/A'}</p>
+                                <p><span className="text-slate-500">Tracking ID:</span> {order.trackingId}</p>
+                                {order.expectedDeliveryDate && (
+                                    <p><span className="text-slate-500">Scheduled Delivery:</span> {new Date(order.expectedDeliveryDate).toDateString()}</p>
+                                )}
+                            </div>
+                        )}
                     </div>
                 </td>
 

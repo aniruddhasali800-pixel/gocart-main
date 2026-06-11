@@ -9,6 +9,7 @@ export default function StoreOrders() {
     const [loading, setLoading] = useState(true)
     const [selectedOrder, setSelectedOrder] = useState(null)
     const [isModalOpen, setIsModalOpen] = useState(false)
+    const [trackingForm, setTrackingForm] = useState({ trackingId: '', carrier: '', expectedDeliveryDate: '' })
 
 
     const fetchOrders = async () => {
@@ -34,12 +35,30 @@ export default function StoreOrders() {
 
     const openModal = (order) => {
         setSelectedOrder(order)
+        setTrackingForm({
+            trackingId: order.trackingId || '',
+            carrier: order.carrier || '',
+            expectedDeliveryDate: order.expectedDeliveryDate ? new Date(order.expectedDeliveryDate).toISOString().split('T')[0] : ''
+        })
         setIsModalOpen(true)
     }
 
     const closeModal = () => {
         setSelectedOrder(null)
         setIsModalOpen(false)
+    }
+
+    const handleUpdateTracking = async () => {
+        try {
+            const data = await api.updateOrderTracking(selectedOrder.id, trackingForm);
+            if (data.success) {
+                toast.success("Tracking updated!");
+                setOrders(orders.map(o => o.id === selectedOrder.id ? { ...o, ...trackingForm } : o));
+                setSelectedOrder({ ...selectedOrder, ...trackingForm });
+            }
+        } catch (error) {
+            toast.error(error.message);
+        }
     }
 
     useEffect(() => {
@@ -156,8 +175,28 @@ export default function StoreOrders() {
                             <p><span className="text-green-700">Order Date:</span> {new Date(selectedOrder.createdAt).toLocaleString()}</p>
                         </div>
 
+                        {/* Tracking details */}
+                        <div className="mb-6 bg-slate-50 p-4 rounded-lg border border-slate-100">
+                            <h3 className="font-semibold mb-3">Tracking Information</h3>
+                            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                                <div>
+                                    <label className="block text-xs text-slate-500 mb-1">Carrier</label>
+                                    <input type="text" value={trackingForm.carrier} onChange={e => setTrackingForm({...trackingForm, carrier: e.target.value})} className="w-full border-gray-300 rounded-md text-sm" placeholder="e.g. FedEx" />
+                                </div>
+                                <div>
+                                    <label className="block text-xs text-slate-500 mb-1">Tracking ID</label>
+                                    <input type="text" value={trackingForm.trackingId} onChange={e => setTrackingForm({...trackingForm, trackingId: e.target.value})} className="w-full border-gray-300 rounded-md text-sm" placeholder="e.g. 1Z999999999" />
+                                </div>
+                                <div>
+                                    <label className="block text-xs text-slate-500 mb-1">Scheduled Delivery Date</label>
+                                    <input type="date" value={trackingForm.expectedDeliveryDate} onChange={e => setTrackingForm({...trackingForm, expectedDeliveryDate: e.target.value})} className="w-full border-gray-300 rounded-md text-sm" />
+                                </div>
+                            </div>
+                            <button onClick={handleUpdateTracking} className="mt-3 px-3 py-1.5 bg-green-600 text-white text-xs font-medium rounded hover:bg-green-700 transition">Save Tracking Details</button>
+                        </div>
+
                         {/* Actions */}
-                        <div className="flex justify-end">
+                        <div className="flex justify-end gap-3">
                             <button onClick={closeModal} className="px-4 py-2 bg-slate-200 rounded hover:bg-slate-300" >
                                 Close
                             </button>
