@@ -18,6 +18,9 @@ export default function RootLayout({ children }) {
     return (
         <ClerkProvider>
             <html lang="en">
+                <head>
+                    <meta name="google-site-verification" content="hPWEykL9cMQH-NSdr9xB2W-OXVfaKjj3ge29c6YbSkg" />
+                </head>
                 <body className={`${outfit.className} antialiased`}>
                     <StoreProvider>
                         <Toaster />
