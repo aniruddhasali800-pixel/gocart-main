@@ -11,22 +11,17 @@ export function middleware(request) {
 
   // 1. If the user is visiting the admin domain
   if (hostname === adminDomain) {
-    // If they visit the root of the admin domain, rewrite to show the /admin section automatically
-    if (path === "/") {
-      return NextResponse.rewrite(new URL("/admin", request.url));
+    // If the path doesn't already start with /admin, rewrite it to /admin/...
+    // This makes the entire api.admin.binarycomputers.shop domain act as the /admin folder
+    if (!path.startsWith("/admin")) {
+      const newPath = path === "/" ? "/admin" : `/admin${path}`;
+      return NextResponse.rewrite(new URL(newPath, request.url));
     }
-    // Allow everything else on the admin domain (like /admin/dashboard)
     return NextResponse.next();
   }
 
-  // 2. If the user is on a REGULAR domain (like binarycomputers.shop)
-  if (hostname !== adminDomain) {
-    // Block any attempt to access the /admin paths
-    if (path.startsWith("/admin")) {
-      // Redirect unauthorized attempts back to the home page
-      return NextResponse.redirect(new URL("/", request.url));
-    }
-  }
+  // Regular domain block removed as per user request
+  // Users can still access /admin via the regular domain for now.
 
   return NextResponse.next();
 }
