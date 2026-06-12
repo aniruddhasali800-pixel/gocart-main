@@ -20,6 +20,7 @@ export default function StoreAddProduct() {
         category: "",
     })
     const [loading, setLoading] = useState(false)
+    const [inputCurrency, setInputCurrency] = useState('INR')
 
 
     const onChangeHandler = (e) => {
@@ -42,11 +43,14 @@ export default function StoreAddProduct() {
                 throw new Error("Please upload at least one image");
             }
 
+            const finalMrp = inputCurrency === 'USD' ? Number(productInfo.mrp) * 83 : Number(productInfo.mrp)
+            const finalPrice = inputCurrency === 'USD' ? Number(productInfo.price) * 83 : Number(productInfo.price)
+
             const res = await api.addProduct({
                 name: productInfo.name,
                 description: productInfo.description,
-                mrp: Number(productInfo.mrp),
-                price: Number(productInfo.price),
+                mrp: finalMrp,
+                price: finalPrice,
                 category: productInfo.category,
                 images: imageUrls
             });
@@ -95,14 +99,26 @@ export default function StoreAddProduct() {
                 <textarea name="description" onChange={onChangeHandler} value={productInfo.description} placeholder="Enter product description" rows={5} className="w-full max-w-sm p-2 px-4 outline-none border border-slate-200 rounded resize-none" required />
             </label>
 
+            <label htmlFor="" className="flex flex-col gap-2 my-6">
+                Pricing Currency
+                <select 
+                    value={inputCurrency} 
+                    onChange={e => setInputCurrency(e.target.value)} 
+                    className="w-full max-w-sm p-2 px-4 outline-none border border-slate-200 rounded font-medium"
+                >
+                    <option value="INR">Rupees (₹)</option>
+                    <option value="USD">Dollars ($)</option>
+                </select>
+            </label>
+
             <div className="flex gap-5">
                 <label htmlFor="" className="flex flex-col gap-2 ">
-                    Actual Price ($)
-                    <input type="number" name="mrp" onChange={onChangeHandler} value={productInfo.mrp} placeholder="0" rows={5} className="w-full max-w-45 p-2 px-4 outline-none border border-slate-200 rounded resize-none" required />
+                    Actual Price ({inputCurrency === 'INR' ? '₹' : '$'})
+                    <input type="number" name="mrp" onChange={onChangeHandler} value={productInfo.mrp} placeholder="0" className="w-full max-w-45 p-2 px-4 outline-none border border-slate-200 rounded" required />
                 </label>
                 <label htmlFor="" className="flex flex-col gap-2 ">
-                    Offer Price ($)
-                    <input type="number" name="price" onChange={onChangeHandler} value={productInfo.price} placeholder="0" rows={5} className="w-full max-w-45 p-2 px-4 outline-none border border-slate-200 rounded resize-none" required />
+                    Offer Price ({inputCurrency === 'INR' ? '₹' : '$'})
+                    <input type="number" name="price" onChange={onChangeHandler} value={productInfo.price} placeholder="0" className="w-full max-w-45 p-2 px-4 outline-none border border-slate-200 rounded" required />
                 </label>
             </div>
 
