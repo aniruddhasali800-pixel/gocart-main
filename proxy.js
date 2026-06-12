@@ -1,5 +1,7 @@
 import { clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server';
 
+import { NextResponse } from 'next/server';
+
 // Define protected routes
 const isProtectedRoute = createRouteMatcher([
     '/cart(.*)',
@@ -9,6 +11,20 @@ const isProtectedRoute = createRouteMatcher([
 ]);
 
 const middleware = clerkMiddleware(async (auth, req) => {
+    const url = req.nextUrl;
+    const hostname = req.headers.get("host") || "";
+    const adminDomain = "api.admin.binarycomputers.shop";
+    const path = url.pathname;
+
+    if (hostname === adminDomain) {
+        if (!path.startsWith("/admin")) {
+            const newPath = path === "/" ? "/admin" : `/admin${path}`;
+            // Protect since it maps to /admin
+            await auth.protect();
+            return NextResponse.rewrite(new URL(newPath, req.url));
+        }
+    }
+
     if (isProtectedRoute(req)) {
         await auth.protect();
     }
