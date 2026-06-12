@@ -9,6 +9,9 @@ const outfit = Outfit({ subsets: ["latin"], weight: ["400", "500", "600"] });
 export const metadata = {
     title: "Binary computers",
     description: "Binary computers",
+    verification: {
+        google: "hPWEykL9cMQH-NSdr9xB2W-OXVfaKjj3ge29c6YbSkg",
+    },
 };
 
 export default function RootLayout({ children }) {
