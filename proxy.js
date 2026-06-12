@@ -17,7 +17,8 @@ const middleware = clerkMiddleware(async (auth, req) => {
     const path = url.pathname;
 
     if (hostname === adminDomain) {
-        if (!path.startsWith("/admin")) {
+        // Exclude API and Clerk routes from being rewritten to /admin
+        if (!path.startsWith("/admin") && !path.startsWith("/api") && !path.startsWith("/__clerk")) {
             const newPath = path === "/" ? "/admin" : `/admin${path}`;
             // Protect since it maps to /admin
             await auth.protect();
