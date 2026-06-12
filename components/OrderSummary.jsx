@@ -7,10 +7,9 @@ import { useRouter } from 'next/navigation';
 import api from '@/lib/api';
 import { setAddresses } from '@/lib/features/address/addressSlice';
 import { clearCart } from '@/lib/features/cart/cartSlice';
+import Price from './Price';
 
 const OrderSummary = ({ totalPrice, items }) => {
-
-    const currency = process.env.NEXT_PUBLIC_CURRENCY_SYMBOL || '$';
 
     const router = useRouter();
     const dispatch = useDispatch();
@@ -122,9 +121,9 @@ const OrderSummary = ({ totalPrice, items }) => {
                         {coupon && <p>Coupon:</p>}
                     </div>
                     <div className='flex flex-col gap-1 font-medium text-right'>
-                        <p>{currency}{totalPrice.toLocaleString()}</p>
+                        <p><Price value={totalPrice} /></p>
                         <p>Free</p>
-                        {coupon && <p>{`-${currency}${(coupon.discount / 100 * totalPrice).toFixed(2)}`}</p>}
+                        {coupon && <p>-<Price value={coupon.discount / 100 * totalPrice} /></p>}
                     </div>
                 </div>
                 {
@@ -144,7 +143,7 @@ const OrderSummary = ({ totalPrice, items }) => {
             </div>
             <div className='flex justify-between py-4'>
                 <p>Total:</p>
-                <p className='font-medium text-right'>{currency}{discountedTotal.toFixed(2)}</p>
+                <p className='font-medium text-right'><Price value={discountedTotal} /></p>
             </div>
             <button
                 onClick={e => toast.promise(handlePlaceOrder(e), {

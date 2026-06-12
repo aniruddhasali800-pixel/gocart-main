@@ -3,6 +3,7 @@ import api from "@/lib/api"
 import Loading from "@/components/Loading"
 import { useEffect, useState } from "react"
 import toast from "react-hot-toast"
+import Price from "@/components/Price"
 
 const STATUS_COLORS = {
     ORDER_PLACED: 'bg-blue-100 text-blue-700',
@@ -13,7 +14,6 @@ const STATUS_COLORS = {
 }
 
 export default function AdminOrders() {
-    const currency = process.env.NEXT_PUBLIC_CURRENCY_SYMBOL || '₹'
     const [orders, setOrders] = useState([])
     const [loading, setLoading] = useState(true)
     const [selected, setSelected] = useState(null)
@@ -62,7 +62,7 @@ export default function AdminOrders() {
                                         <p className="text-xs text-slate-400">{order.address?.email || '—'}</p>
                                     </td>
                                     <td className="px-4 py-3">{order.orderItems?.length || 0} item{order.orderItems?.length !== 1 ? 's' : ''}</td>
-                                    <td className="px-4 py-3 font-semibold text-slate-800">{currency}{order.total}</td>
+                                    <td className="px-4 py-3 font-semibold text-slate-800"><Price value={order.total} /></td>
                                     <td className="px-4 py-3">{order.paymentMethod}</td>
                                     <td className="px-4 py-3">
                                         <span className={`text-xs px-2.5 py-1 rounded-full font-medium ${STATUS_COLORS[order.status] || 'bg-slate-100 text-slate-600'}`}>
@@ -117,9 +117,9 @@ export default function AdminOrders() {
                                         <img src={item.product?.images?.[0] || item.productId?.images?.[0]} alt="" className="w-12 h-12 rounded object-cover" />
                                         <div className="flex-1">
                                             <p className="font-medium text-slate-700 text-sm">{item.product?.name || item.productId?.name}</p>
-                                            <p className="text-xs text-slate-400">Qty: {item.quantity} × {currency}{item.price}</p>
+                                            <p className="text-xs text-slate-400">Qty: {item.quantity} × <Price value={item.price} /></p>
                                         </div>
-                                        <p className="font-semibold text-slate-800 text-sm">{currency}{item.quantity * item.price}</p>
+                                        <p className="font-semibold text-slate-800 text-sm"><Price value={item.quantity * item.price} /></p>
                                     </div>
                                 ))}
                             </div>
@@ -127,7 +127,7 @@ export default function AdminOrders() {
 
                         <div className="flex justify-between items-center pt-3 border-t border-slate-100">
                             <span className="text-slate-500 text-sm">Total</span>
-                            <span className="text-xl font-bold text-slate-800">{currency}{selected.total}</span>
+                            <span className="text-xl font-bold text-slate-800"><Price value={selected.total} /></span>
                         </div>
                     </div>
                 </div>

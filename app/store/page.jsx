@@ -10,10 +10,11 @@ import {
 import Image from "next/image"
 import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
+import { useSelector } from "react-redux"
 
 export default function Dashboard() {
 
-    const currency = process.env.NEXT_PUBLIC_CURRENCY_SYMBOL || '₹'
+    const { symbol: currencySymbol, rate: currencyRate, code: currencyCode } = useSelector(state => state.currency)
     const router   = useRouter()
 
     const [loading, setLoading] = useState(true)
@@ -65,7 +66,14 @@ export default function Dashboard() {
 
     if (loading) return <Loading />
 
-    const fmt = (val) => currency + Number(val).toLocaleString('en-IN', { minimumFractionDigits: 2 })
+    const fmt = (val) => {
+        const converted = Number(val) * currencyRate
+        if (currencyCode === 'USD') {
+            return currencySymbol + converted.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+        } else {
+            return currencySymbol + converted.toLocaleString('en-IN', { minimumFractionDigits: 0, maximumFractionDigits: 0 })
+        }
+    }
 
     const cards = [
         {

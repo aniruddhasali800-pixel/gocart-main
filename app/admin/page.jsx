@@ -9,9 +9,10 @@ import {
 import { useEffect, useState } from "react"
 import toast from "react-hot-toast"
 import Link from "next/link"
+import { useSelector } from "react-redux"
 
 export default function AdminDashboard() {
-    const currency = process.env.NEXT_PUBLIC_CURRENCY_SYMBOL || '₹'
+    const { symbol: currencySymbol, rate: currencyRate, code: currencyCode } = useSelector(state => state.currency)
 
     const [loading, setLoading] = useState(true)
     const [dashboardData, setDashboardData] = useState({
@@ -43,7 +44,14 @@ export default function AdminDashboard() {
 
     if (loading) return <Loading />
 
-    const fmt = (val) => currency + Number(val).toLocaleString('en-IN', { minimumFractionDigits: 2 })
+    const fmt = (val) => {
+        const converted = Number(val) * currencyRate
+        if (currencyCode === 'USD') {
+            return currencySymbol + converted.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+        } else {
+            return currencySymbol + converted.toLocaleString('en-IN', { minimumFractionDigits: 0, maximumFractionDigits: 0 })
+        }
+    }
 
     const statCards = [
         {

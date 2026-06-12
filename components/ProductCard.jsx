@@ -3,10 +3,9 @@ import { StarIcon, ShoppingCart } from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
 import React from 'react'
+import Price from './Price'
 
 const ProductCard = ({ product }) => {
-
-    const currency = process.env.NEXT_PUBLIC_CURRENCY_SYMBOL || '$'
 
     // calculate the average rating of the product
     const rating = Array.isArray(product.rating) && product.rating.length > 0
@@ -77,7 +76,7 @@ const ProductCard = ({ product }) => {
                     {/* Price */}
                     <div className='flex items-center justify-between'>
                         <p className='text-base sm:text-lg font-bold text-green-600'>
-                            {currency}{product.price}
+                            <Price value={product.price} />
                         </p>
                         <span className='text-xs text-gray-400 bg-gray-100 px-2 py-0.5 rounded-full'>
                             View

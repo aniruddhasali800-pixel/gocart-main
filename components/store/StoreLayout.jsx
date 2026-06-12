@@ -13,6 +13,7 @@ const StoreLayout = ({ children }) => {
     const [storeStatus, setStoreStatus] = useState(null) // null | 'pending' | 'approved' | 'rejected' | 'none'
     const [loading, setLoading] = useState(true)
     const [storeInfo, setStoreInfo] = useState(null)
+    const [isSidebarOpen, setIsSidebarOpen] = useState(false)
 
     const fetchStoreStatus = async () => {
         try {
@@ -63,11 +64,11 @@ const StoreLayout = ({ children }) => {
     // Store is pending approval
     if (storeStatus === 'pending') {
         return (
-            <div className="flex flex-col h-screen">
-                <SellerNavbar />
-                <div className="flex flex-1 items-start h-full overflow-y-scroll no-scrollbar">
+            <div className="flex flex-col h-screen overflow-hidden">
+                <SellerNavbar onMenuClick={() => setIsSidebarOpen(true)} />
+                <div className="flex flex-1 items-start h-full overflow-hidden relative">
                     {/* Sidebar - visible but with lock indicator */}
-                    <SellerSidebar storeInfo={storeInfo} isPending={true} />
+                    <SellerSidebar storeInfo={storeInfo} isPending={true} isOpen={isSidebarOpen} onClose={() => setIsSidebarOpen(false)} />
 
                     {/* Main content locked overlay */}
                     <div className="flex-1 h-full flex items-center justify-center bg-slate-50 relative">
@@ -116,11 +117,11 @@ const StoreLayout = ({ children }) => {
 
     // Approved seller
     return (
-        <div className="flex flex-col h-screen">
-            <SellerNavbar />
-            <div className="flex flex-1 items-start h-full overflow-y-scroll no-scrollbar">
-                <SellerSidebar storeInfo={storeInfo} isPending={false} />
-                <div className="flex-1 h-full p-5 lg:pl-12 lg:pt-12 overflow-y-scroll">
+        <div className="flex flex-col h-screen overflow-hidden">
+            <SellerNavbar onMenuClick={() => setIsSidebarOpen(true)} />
+            <div className="flex flex-1 items-start h-full overflow-hidden relative">
+                <SellerSidebar storeInfo={storeInfo} isPending={false} isOpen={isSidebarOpen} onClose={() => setIsSidebarOpen(false)} />
+                <div className="flex-1 h-full p-5 lg:pl-12 lg:pt-12 overflow-y-auto w-full">
                     {children}
                 </div>
             </div>

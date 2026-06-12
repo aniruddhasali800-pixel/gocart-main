@@ -10,6 +10,7 @@ const AdminLayout = ({ children }) => {
     const pathname = usePathname()
     const [isAdmin, setIsAdmin] = useState(false)
     const [loading, setLoading] = useState(true)
+    const [isSidebarOpen, setIsSidebarOpen] = useState(false)
 
     // Skip auth for login page
     const isLoginPage = pathname === '/admin/login'
@@ -32,7 +33,7 @@ const AdminLayout = ({ children }) => {
         }
 
         // Verify token with backend
-        const BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://gocart-main-4.onrender.com'
+        const BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://api.admin.binarycomputers.shop'
         fetch(`${BASE_URL}/api/admin/auth/profile`, {
             headers: { Authorization: `Bearer ${token}` },
         })
@@ -61,11 +62,11 @@ const AdminLayout = ({ children }) => {
     if (!isAdmin) return null
 
     return (
-        <div className="flex flex-col h-screen">
-            <AdminNavbar />
-            <div className="flex flex-1 items-start h-full overflow-y-scroll no-scrollbar">
-                <AdminSidebar />
-                <div className="flex-1 h-full p-5 lg:pl-12 lg:pt-12 overflow-y-scroll">
+        <div className="flex flex-col h-screen overflow-hidden">
+            <AdminNavbar onMenuClick={() => setIsSidebarOpen(true)} />
+            <div className="flex flex-1 items-start h-full overflow-hidden relative">
+                <AdminSidebar isOpen={isSidebarOpen} onClose={() => setIsSidebarOpen(false)} />
+                <div className="flex-1 h-full p-5 lg:pl-12 lg:pt-12 overflow-y-auto w-full">
                     {children}
                 </div>
             </div>
