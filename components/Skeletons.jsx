@@ -13,27 +13,31 @@ const SkeletonBlock = ({ className = '' }) => (
 
 // ─── Product Card Skeleton ──────────────────────────────────────────
 export const ProductCardSkeleton = () => (
-    <div className='w-full sm:w-60 bg-white border border-gray-200 rounded-2xl shadow-md overflow-hidden'>
+    <div className='w-full min-w-0 bg-white border border-gray-200 rounded-xl sm:rounded-2xl shadow-xs overflow-hidden'>
         {/* Image area */}
-        <SkeletonBlock className='h-48 sm:h-56 rounded-none rounded-t-2xl' />
+        <div className='aspect-square w-full'>
+            <SkeletonBlock className='h-full w-full rounded-none' />
+        </div>
 
         {/* Details */}
-        <div className='p-3 sm:p-4 border-t border-gray-100 bg-white'>
+        <div className='p-2 sm:p-3 border-t border-gray-100 bg-white'>
             {/* Name */}
-            <SkeletonBlock className='h-4 w-4/5 mb-2' />
+            <div className='h-5 sm:h-6 mb-1 flex flex-col justify-center'>
+                <SkeletonBlock className='h-3 w-4/5' />
+            </div>
 
             {/* Stars */}
-            <div className='flex items-center gap-1 mb-2'>
+            <div className='flex items-center gap-0.5 mb-1.5'>
                 {Array(5).fill('').map((_, i) => (
-                    <SkeletonBlock key={i} className='h-3 w-3 rounded-full' />
+                    <SkeletonBlock key={i} className='h-2.5 w-2.5 rounded-full' />
                 ))}
-                <SkeletonBlock className='h-3 w-6 ml-1' />
+                <SkeletonBlock className='h-2.5 w-5 ml-1' />
             </div>
 
             {/* Price + View */}
-            <div className='flex items-center justify-between'>
-                <SkeletonBlock className='h-5 w-20' />
-                <SkeletonBlock className='h-5 w-12 rounded-full' />
+            <div className='flex items-center justify-between gap-1'>
+                <SkeletonBlock className='h-4 w-16' />
+                <SkeletonBlock className='h-4 w-10 rounded-full' />
             </div>
         </div>
     </div>
@@ -74,7 +78,7 @@ export const ProductSectionSkeleton = ({ count = 4 }) => (
         </div>
 
         {/* Product grid */}
-        <div className='mt-12 grid grid-cols-2 sm:flex flex-wrap gap-6 justify-between'>
+        <div className='mt-12 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-4'>
             {Array(count).fill('').map((_, i) => (
                 <ProductCardSkeleton key={i} />
             ))}
@@ -84,7 +88,7 @@ export const ProductSectionSkeleton = ({ count = 4 }) => (
 
 // ─── OurSpecs Skeleton ──────────────────────────────────────────────
 export const OurSpecsSkeleton = () => (
-    <div className='px-6 my-20 max-w-6xl mx-auto'>
+    <div className='px-6 my-20 max-w-7xl mx-auto'>
         {/* Title */}
         <div className='flex flex-col items-center'>
             <SkeletonBlock className='h-7 w-52 mb-2' />
@@ -263,7 +267,7 @@ export const StoreShopSkeleton = () => (
         {/* Products */}
         <div className='max-w-7xl mx-auto mb-40'>
             <SkeletonBlock className='h-7 w-44 mt-12 mb-5' />
-            <div className='grid grid-cols-2 sm:flex flex-wrap gap-6 xl:gap-12'>
+            <div className='grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-4'>
                 {Array(4).fill('').map((_, i) => (
                     <ProductCardSkeleton key={i} />
                 ))}
@@ -278,12 +282,12 @@ export const HomePageSkeleton = () => (
         <HeroSkeleton />
 
         {/* Latest Products section */}
-        <div className='px-6 my-30 max-w-6xl mx-auto'>
+        <div className='px-6 my-30 max-w-7xl mx-auto'>
             <ProductSectionSkeleton count={4} />
         </div>
 
         {/* Best Selling section */}
-        <div className='px-6 my-30 max-w-6xl mx-auto'>
+        <div className='px-6 my-30 max-w-7xl mx-auto'>
             <ProductSectionSkeleton count={8} />
         </div>
 
@@ -297,7 +301,7 @@ export const ShopPageSkeleton = () => (
     <div className='min-h-[70vh] mx-6'>
         <div className='max-w-7xl mx-auto'>
             <SkeletonBlock className='h-8 w-44 my-6' />
-            <div className='grid grid-cols-2 sm:flex flex-wrap gap-6 xl:gap-12 mx-auto mb-32'>
+            <div className='grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-4 mx-auto mb-32'>
                 {Array(8).fill('').map((_, i) => (
                     <ProductCardSkeleton key={i} />
                 ))}
