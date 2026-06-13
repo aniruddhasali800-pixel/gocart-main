@@ -3,7 +3,7 @@ import ProductCard from "@/components/ProductCard"
 import { useParams } from "next/navigation"
 import { useEffect, useState } from "react"
 import { MailIcon, MapPinIcon } from "lucide-react"
-import Loading from "@/components/Loading"
+import { StoreShopSkeleton } from "@/components/Skeletons"
 import Image from "next/image"
 import { dummyStoreData, productDummyData } from "@/assets/assets"
 
@@ -64,5 +64,5 @@ export default function StoreShop() {
                 </div>
             </div>
         </div>
-    ) : <Loading />
+    ) : <StoreShopSkeleton />
 }

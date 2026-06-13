@@ -1,6 +1,6 @@
 'use client'
 import { usePathname } from "next/navigation"
-import { HomeIcon, ShieldCheckIcon, StoreIcon, TicketPercentIcon, ClipboardListIcon, X } from "lucide-react"
+import { HomeIcon, ShieldCheckIcon, StoreIcon, TicketPercentIcon, ClipboardListIcon, X, UsersIcon } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
 import { UserButton, useUser } from "@clerk/nextjs"
@@ -11,6 +11,7 @@ const AdminSidebar = ({ isOpen, onClose }) => {
 
     const sidebarLinks = [
         { name: 'Dashboard',    href: '/admin',          icon: HomeIcon },
+        { name: 'Users',        href: '/admin/users',    icon: UsersIcon },
         { name: 'Seller Requests', href: '/admin/stores', icon: ShieldCheckIcon },
         { name: 'All Orders',   href: '/admin/orders',   icon: ClipboardListIcon },
         { name: 'Coupons',      href: '/admin/coupons',  icon: TicketPercentIcon },

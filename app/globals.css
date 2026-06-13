@@ -9,6 +9,15 @@
             transform: translateX(-50%);
         }
     }
+
+    @keyframes skeletonShimmer {
+        0% {
+            transform: translateX(-100%);
+        }
+        100% {
+            transform: translateX(100%);
+        }
+    }
 }
 
 @layer base {

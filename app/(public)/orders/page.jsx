@@ -2,6 +2,7 @@
 import PageTitle from "@/components/PageTitle"
 import { useEffect, useState } from "react";
 import OrderItem from "@/components/OrderItem";
+import { OrdersSkeleton } from "@/components/Skeletons";
 import api from "@/lib/api";
 import toast from "react-hot-toast";
 
@@ -25,11 +26,7 @@ export default function Orders() {
     }, []);
 
     if (loading) {
-        return (
-            <div className="min-h-[70vh] flex items-center justify-center">
-                <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-slate-700" />
-            </div>
-        );
+        return <OrdersSkeleton />;
     }
 
     return (

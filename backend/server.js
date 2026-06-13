@@ -21,6 +21,7 @@ import adminAuthRoutes from './routes/adminAuthRoutes.js';
 import dashboardRoutes from './routes/dashboardRoutes.js';
 import uploadRoutes from './routes/uploadRoutes.js';
 import notificationRoutes from './routes/notificationRoutes.js';
+import userAnalyticsRoutes from './routes/userAnalyticsRoutes.js';
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -92,6 +93,7 @@ app.use('/api/orders', orderRoutes);
 app.use('/api/addresses', addressRoutes);
 app.use('/api/coupons', couponRoutes);
 app.use('/api/stores', storeRoutes);
+app.use('/api/admin/users', userAnalyticsRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/admin/auth', adminAuthRoutes);   // ← new email/password admin auth
 app.use('/api/seller', dashboardRoutes);
