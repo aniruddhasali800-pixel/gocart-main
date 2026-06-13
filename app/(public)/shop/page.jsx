@@ -26,7 +26,7 @@ import { ShopPageSkeleton, ProductCardSkeleton } from "@/components/Skeletons"
         <div className="min-h-[70vh] mx-6">
             <div className=" max-w-7xl mx-auto">
                 <h1 onClick={() => router.push('/shop')} className="text-2xl text-slate-500 my-6 flex items-center gap-2 cursor-pointer"> {search && <MoveLeftIcon size={20} />}  All <span className="text-slate-700 font-medium">Products</span></h1>
-                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-4 mx-auto mb-32">
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4 xl:grid-cols-5 gap-4 mx-auto mb-32">
                     {loading || products.length === 0
                         ? Array(8).fill('').map((_, i) => <ProductCardSkeleton key={i} />)
                         : filteredProducts.map((product) => <ProductCard key={product.id} product={product} />)

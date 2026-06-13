@@ -78,7 +78,7 @@ export const ProductSectionSkeleton = ({ count = 4 }) => (
         </div>
 
         {/* Product grid */}
-        <div className='mt-12 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-4'>
+        <div className='mt-12 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4 xl:grid-cols-5 gap-4'>
             {Array(count).fill('').map((_, i) => (
                 <ProductCardSkeleton key={i} />
             ))}
@@ -267,7 +267,7 @@ export const StoreShopSkeleton = () => (
         {/* Products */}
         <div className='max-w-7xl mx-auto mb-40'>
             <SkeletonBlock className='h-7 w-44 mt-12 mb-5' />
-            <div className='grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-4'>
+            <div className='grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4 xl:grid-cols-5 gap-4'>
                 {Array(4).fill('').map((_, i) => (
                     <ProductCardSkeleton key={i} />
                 ))}
@@ -301,7 +301,7 @@ export const ShopPageSkeleton = () => (
     <div className='min-h-[70vh] mx-6'>
         <div className='max-w-7xl mx-auto'>
             <SkeletonBlock className='h-8 w-44 my-6' />
-            <div className='grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-4 mx-auto mb-32'>
+            <div className='grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4 xl:grid-cols-5 gap-4 mx-auto mb-32'>
                 {Array(8).fill('').map((_, i) => (
                     <ProductCardSkeleton key={i} />
                 ))}

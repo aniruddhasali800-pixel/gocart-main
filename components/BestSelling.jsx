@@ -19,7 +19,7 @@ const BestSelling = () => {
     return (
         <div className='px-6 my-30 max-w-7xl mx-auto'>
             <Title title='Best Selling' description={`Showing ${sortedProducts.length < displayQuantity ? sortedProducts.length : displayQuantity} of ${sortedProducts.length} products`} href='/shop' />
-            <div className='mt-12 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-4'>
+            <div className='mt-12 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4 xl:grid-cols-5 gap-4'>
                 {loading || products.length === 0
                     ? Array(displayQuantity).fill('').map((_, i) => <ProductCardSkeleton key={i} />)
                     : sortedProducts.slice(0, displayQuantity).map((product, index) => (
