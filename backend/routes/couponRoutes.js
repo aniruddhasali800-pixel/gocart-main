@@ -1,6 +1,7 @@
 import express from 'express';
 import Coupon from '../models/Coupon.js';
-import { requireAuth, requireAdmin, requireSeller } from '../middleware/authMiddleware.js';
+import { requireAuth, requireSeller } from '../middleware/authMiddleware.js';
+import { requireAdminJWT } from './adminAuthRoutes.js';
 
 const router = express.Router();
 
@@ -28,7 +29,7 @@ router.post('/verify', requireAuth, async (req, res) => {
 
 // ─── GET /api/coupons ──────────────────────────────────────────
 // Admin: list all coupons
-router.get('/', requireAdmin, async (req, res) => {
+router.get('/', requireAdminJWT, async (req, res) => {
     try {
         const coupons = await Coupon.find().sort({ createdAt: -1 });
         const normalized = coupons.map(c => {
@@ -44,7 +45,7 @@ router.get('/', requireAdmin, async (req, res) => {
 
 // ─── POST /api/coupons ─────────────────────────────────────────
 // Admin: create a global coupon
-router.post('/', requireAdmin, async (req, res) => {
+router.post('/', requireAdminJWT, async (req, res) => {
     try {
         const { code, description, discount, forNewUser, forMember, isPublic, expiresAt } = req.body;
         const coupon = await Coupon.create({
@@ -87,7 +88,7 @@ router.post('/seller', requireSeller, async (req, res) => {
 
 // ─── DELETE /api/coupons/:id ───────────────────────────────────
 // Admin: delete a coupon
-router.delete('/:id', requireAdmin, async (req, res) => {
+router.delete('/:id', requireAdminJWT, async (req, res) => {
     try {
         const deleted = await Coupon.findByIdAndDelete(req.params.id);
         if (!deleted) return res.status(404).json({ success: false, message: 'Coupon not found' });

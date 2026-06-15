@@ -2,6 +2,7 @@ import { Outfit } from "next/font/google";
 import { Toaster } from "react-hot-toast";
 import { ClerkProvider } from "@clerk/nextjs";
 import StoreProvider from "@/app/StoreProvider";
+import { CustomizeProvider } from "@/components/CustomizeProvider";
 import "./globals.css";
 
 const outfit = Outfit({ subsets: ["latin"], weight: ["400", "500", "600"] });
@@ -60,8 +61,10 @@ export default function RootLayout({ children }) {
                 </head>
                 <body className={`${outfit.className} antialiased`}>
                     <StoreProvider>
-                        <Toaster />
-                        {children}
+                        <CustomizeProvider>
+                            <Toaster />
+                            {children}
+                        </CustomizeProvider>
                     </StoreProvider>
                 </body>
             </html>

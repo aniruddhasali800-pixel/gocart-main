@@ -13,6 +13,7 @@ import {
 } from "@clerk/nextjs";
 import api from "@/lib/api";
 import toast from "react-hot-toast";
+import { useCustomize } from "@/components/CustomizeProvider";
 
 const Navbar = () => {
 
@@ -22,6 +23,7 @@ const Navbar = () => {
     const [search, setSearch] = useState('')
     const cartCount = useSelector(state => state.cart.total)
     const { isSignedIn } = useAuth();
+    const { logo } = useCustomize();
 
     // Mobile menu state
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
@@ -161,7 +163,7 @@ const Navbar = () => {
                 <div className="flex items-center justify-between max-w-7xl mx-auto py-1.5 transition-all">
 
                     <Link href="/" className="relative flex items-center">
-                        <Image src="/logo.png" alt="Binary Computers" width={150} height={40} className="w-32 sm:w-36 object-contain" />
+                        <img src={logo || "/logo.png"} alt="Binary Computers" className="h-8 sm:h-10 w-auto object-contain" />
                     </Link>
 
                     {/* Desktop Menu */}

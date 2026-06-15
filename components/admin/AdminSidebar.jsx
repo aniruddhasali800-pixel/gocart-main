@@ -15,6 +15,7 @@ const AdminSidebar = ({ isOpen, onClose }) => {
         { name: 'Seller Requests', href: '/admin/stores', icon: ShieldCheckIcon },
         { name: 'All Orders',   href: '/admin/orders',   icon: ClipboardListIcon },
         { name: 'Coupons',      href: '/admin/coupons',  icon: TicketPercentIcon },
+        { name: 'Customize',    href: '/admin/customize', icon: StoreIcon },
     ]
 
     return (

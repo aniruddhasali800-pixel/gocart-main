@@ -22,6 +22,7 @@ import dashboardRoutes from './routes/dashboardRoutes.js';
 import uploadRoutes from './routes/uploadRoutes.js';
 import notificationRoutes from './routes/notificationRoutes.js';
 import userAnalyticsRoutes from './routes/userAnalyticsRoutes.js';
+import customizeRoutes from './routes/customizeRoutes.js';
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -99,6 +100,7 @@ app.use('/api/admin/auth', adminAuthRoutes);   // ← new email/password admin a
 app.use('/api/seller', dashboardRoutes);
 app.use('/api/upload', uploadRoutes);
 app.use('/api/notifications', notificationRoutes);
+app.use('/api/customize', customizeRoutes);
 
 // ─── Global Error Handler ─────────────────────────────────────
 app.use((err, req, res, next) => {
