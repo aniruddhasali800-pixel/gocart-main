@@ -54,7 +54,7 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
     return (
-        <ClerkProvider publishableKey={process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY || "pk_test_YWxsb3dlZC1pbXBhbGEtNzAuY2xlcmsuYWNjb3VudHMuZGV2JA"}>
+        <ClerkProvider publishableKey="pk_test_YWxsb3dlZC1pbXBhbGEtNzAuY2xlcmsuYWNjb3VudHMuZGV2JA">
             <html lang="en">
                 <head>
                     <meta name="google-site-verification" content="hPWEykL9cMQH-NSdr9xB2W-OXVfaKjj3ge29c6YbSkg" />

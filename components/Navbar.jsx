@@ -350,7 +350,7 @@ const Navbar = () => {
                         <div>
                             <label className="text-sm font-medium text-slate-600 mb-1 block">Store / Business Name *</label>
                             <input name="name" required value={sellerForm.name} onChange={handleSellerFormChange}
-                                type="text" placeholder="e.g. Binary Computers"
+                                type="text" placeholder="e.g. Binary Computers" minLength={3} maxLength={50}
                                 className="w-full border border-slate-300 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-green-400" />
                         </div>
                         <div>
@@ -362,19 +362,19 @@ const Navbar = () => {
                         <div>
                             <label className="text-sm font-medium text-slate-600 mb-1 block">Phone Number *</label>
                             <input name="phone" required value={sellerForm.phone} onChange={handleSellerFormChange}
-                                type="tel" placeholder="Enter your phone number"
+                                type="tel" placeholder="Enter your phone number" pattern="[0-9]{10,15}" title="Please enter a valid phone number (10-15 digits)"
                                 className="w-full border border-slate-300 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-green-400" />
                         </div>
                         <div>
                             <label className="text-sm font-medium text-slate-600 mb-1 block">Store / Business Address *</label>
                             <textarea name="address" required value={sellerForm.address} onChange={handleSellerFormChange}
-                                rows={2} placeholder="Full address including city, state & pincode"
+                                rows={2} placeholder="Full address including city, state & pincode" minLength={10}
                                 className="w-full border border-slate-300 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-green-400 resize-none" />
                         </div>
                         <div>
                             <label className="text-sm font-medium text-slate-600 mb-1 block">GST Number *</label>
                             <input name="gstNumber" required value={sellerForm.gstNumber} onChange={handleSellerFormChange}
-                                type="text" placeholder="e.g. 29AAACC1234F1Z5"
+                                type="text" placeholder="e.g. 29AAACC1234F1Z5" minLength={5} maxLength={15}
                                 className="w-full border border-slate-300 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-green-400" />
                         </div>
 
