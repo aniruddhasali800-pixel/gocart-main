@@ -88,4 +88,100 @@ router.get('/orders', requireAdminJWT, async (req, res) => {
     }
 });
 
+// ─── ADMIN INVENTORY ROUTES ──────────────────────────────────
+router.get('/products', requireAdminJWT, async (req, res) => {
+    try {
+        const products = await Product.find({}).sort({ createdAt: -1 }).populate('storeId', 'name');
+        const normalized = products.map(p => {
+            const obj = p.toObject();
+            obj.id = obj._id.toString();
+            return obj;
+        });
+        res.json({ success: true, products: normalized });
+    } catch (error) {
+        res.status(500).json({ success: false, message: error.message });
+    }
+});
+
+router.post('/products', requireAdminJWT, async (req, res) => {
+    try {
+        const { name, description, mrp, price, images, category } = req.body;
+        const product = await Product.create({
+            name, description, mrp, price, images: images || [], category,
+            // storeId is intentionally omitted for admin-added products
+        });
+        res.status(201).json({ success: true, message: 'Product created', product });
+    } catch (error) {
+        res.status(400).json({ success: false, message: error.message });
+    }
+});
+
+router.put('/products/:id', requireAdminJWT, async (req, res) => {
+    try {
+        const { name, description, mrp, price, images, category, inStock } = req.body;
+        const product = await Product.findByIdAndUpdate(req.params.id, {
+            name, description, mrp, price, images, category, inStock
+        }, { new: true });
+        if (!product) return res.status(404).json({ success: false, message: 'Product not found' });
+        res.json({ success: true, message: 'Product updated', product });
+    } catch (error) {
+        res.status(400).json({ success: false, message: error.message });
+    }
+});
+
+router.delete('/products/:id', requireAdminJWT, async (req, res) => {
+    try {
+        const product = await Product.findByIdAndDelete(req.params.id);
+        if (!product) return res.status(404).json({ success: false, message: 'Product not found' });
+        res.json({ success: true, message: 'Product deleted' });
+    } catch (error) {
+        res.status(500).json({ success: false, message: error.message });
+    }
+});
+
+router.patch('/products/:id/toggle-stock', requireAdminJWT, async (req, res) => {
+    try {
+        const product = await Product.findById(req.params.id);
+        if (!product) return res.status(404).json({ success: false, message: 'Product not found' });
+        product.inStock = !product.inStock;
+        await product.save();
+        res.json({ success: true, message: `Stock ${product.inStock ? 'enabled' : 'disabled'}`, inStock: product.inStock });
+    } catch (error) {
+        res.status(500).json({ success: false, message: error.message });
+    }
+});
+
+// ─── ADMIN ORDER STATUS UPDATE ───────────────────────────────
+router.put('/orders/:id/status', requireAdminJWT, async (req, res) => {
+    try {
+        const { status } = req.body;
+        const validStatuses = ['ORDER_PLACED', 'PROCESSING', 'SHIPPED', 'DELIVERED', 'CANCELLED'];
+        if (!validStatuses.includes(status)) {
+            return res.status(400).json({ success: false, message: 'Invalid status' });
+        }
+        
+        const order = await Order.findByIdAndUpdate(req.params.id, { status }, { new: true });
+        if (!order) return res.status(404).json({ success: false, message: 'Order not found' });
+        
+        res.json({ success: true, message: 'Order status updated', order });
+    } catch (error) {
+        res.status(500).json({ success: false, message: error.message });
+    }
+});
+
+router.patch('/orders/:id/tracking', requireAdminJWT, async (req, res) => {
+    try {
+        const { trackingId, carrier, expectedDeliveryDate } = req.body;
+        const order = await Order.findByIdAndUpdate(
+            req.params.id,
+            { trackingId, carrier, expectedDeliveryDate },
+            { new: true }
+        );
+        if (!order) return res.status(404).json({ success: false, message: 'Order not found' });
+        res.json({ success: true, message: 'Tracking details updated', order });
+    } catch (error) {
+        res.status(500).json({ success: false, message: error.message });
+    }
+});
+
 export default router;

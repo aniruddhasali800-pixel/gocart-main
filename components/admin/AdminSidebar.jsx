@@ -1,6 +1,6 @@
 'use client'
 import { usePathname } from "next/navigation"
-import { HomeIcon, ShieldCheckIcon, StoreIcon, TicketPercentIcon, ClipboardListIcon, X, UsersIcon } from "lucide-react"
+import { HomeIcon, ShieldCheckIcon, StoreIcon, TicketPercentIcon, ClipboardListIcon, X, UsersIcon, ShoppingBasketIcon } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
 import { UserButton, useUser } from "@clerk/nextjs"
@@ -11,6 +11,8 @@ const AdminSidebar = ({ isOpen, onClose }) => {
 
     const sidebarLinks = [
         { name: 'Dashboard',    href: '/admin',          icon: HomeIcon },
+        { name: 'Add Product',  href: '/admin/add-product', icon: ShoppingBasketIcon },
+        { name: 'Inventory',    href: '/admin/inventory',icon: StoreIcon },
         { name: 'Users',        href: '/admin/users',    icon: UsersIcon },
         { name: 'Seller Requests', href: '/admin/stores', icon: ShieldCheckIcon },
         { name: 'All Orders',   href: '/admin/orders',   icon: ClipboardListIcon },
@@ -45,7 +47,7 @@ const AdminSidebar = ({ isOpen, onClose }) => {
                     <p className="text-slate-700 text-sm">Hi, {user?.firstName || 'Admin'}</p>
                 </div>
 
-                <div className="mt-2">
+                <div className="mt-2 flex-1 overflow-y-auto">
                     {sidebarLinks.map((link, index) => (
                         <Link key={index} href={link.href} onClick={onClose} className={`relative flex items-center gap-3 text-slate-500 hover:bg-slate-50 p-3 transition ${pathname === link.href && 'bg-slate-100 sm:text-slate-600'}`}>
                             <link.icon size={18} className="ml-5" />

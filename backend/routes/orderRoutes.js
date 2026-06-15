@@ -26,22 +26,6 @@ router.get('/user', requireAuth, async (req, res) => {
     }
 });
 
-// ─── GET /api/orders/store ─────────────────────────────────────
-// Seller: get orders for their store
-router.get('/store', requireSeller, async (req, res) => {
-    try {
-        const orders = await Order.find({ storeId: req.storeId })
-            .populate({ path: 'addressId', model: Address })
-            .populate({ path: 'couponId', model: Coupon })
-            .populate({ path: 'orderItems.productId', model: Product })
-            .sort({ createdAt: -1 });
-
-        const normalized = orders.map(order => normalizeOrder(order));
-        res.json({ success: true, orders: normalized });
-    } catch (error) {
-        res.status(500).json({ success: false, message: error.message });
-    }
-});
 
 // ─── POST /api/orders ──────────────────────────────────────────
 // User: place an order
@@ -100,55 +84,7 @@ router.post('/', requireAuth, async (req, res) => {
             status: 'ORDER_PLACED',
         });
 
-        // Trigger Notification to Seller
-        if (storeId) {
-            const store = await Store.findById(storeId);
-            if (store) {
-                await Notification.create({
-                    userId: store.userId,
-                    title: 'New Order Received',
-                    message: `You received a new order of $${order.total}.`,
-                    type: 'order',
-                    link: '/store/orders'
-                });
-            }
-        }
-
         res.status(201).json({ success: true, message: 'Order placed successfully', orderId: order._id });
-    } catch (error) {
-        res.status(500).json({ success: false, message: error.message });
-    }
-});
-
-// ─── PATCH /api/orders/:id/status ─────────────────────────────
-// Seller: update order status
-router.patch('/:id/status', requireSeller, async (req, res) => {
-    try {
-        const { status } = req.body;
-        const order = await Order.findOneAndUpdate(
-            { _id: req.params.id, storeId: req.storeId },
-            { status },
-            { new: true }
-        );
-        if (!order) return res.status(404).json({ success: false, message: 'Order not found' });
-        res.json({ success: true, message: 'Status updated', status: order.status });
-    } catch (error) {
-        res.status(500).json({ success: false, message: error.message });
-    }
-});
-
-// ─── PATCH /api/orders/:id/tracking ─────────────────────────────
-// Seller: update order tracking details
-router.patch('/:id/tracking', requireSeller, async (req, res) => {
-    try {
-        const { trackingId, carrier, expectedDeliveryDate } = req.body;
-        const order = await Order.findOneAndUpdate(
-            { _id: req.params.id, storeId: req.storeId },
-            { trackingId, carrier, expectedDeliveryDate },
-            { new: true }
-        );
-        if (!order) return res.status(404).json({ success: false, message: 'Order not found' });
-        res.json({ success: true, message: 'Tracking details updated', order: normalizeOrder(order) });
     } catch (error) {
         res.status(500).json({ success: false, message: error.message });
     }

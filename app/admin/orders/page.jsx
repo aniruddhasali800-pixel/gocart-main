@@ -31,6 +31,29 @@ export default function AdminOrders() {
 
     useEffect(() => { fetchOrders() }, [])
 
+    const updateOrderStatus = async (status) => {
+        try {
+            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'https://gocart-main-4.onrender.com'}/api/admin/orders/${selected.id}/status`, {
+                method: 'PUT',
+                headers: { 
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${localStorage.getItem('adminToken')}`
+                },
+                body: JSON.stringify({ status })
+            })
+            const data = await res.json()
+            if (data.success) {
+                toast.success('Status updated')
+                setOrders(orders.map(o => o.id === selected.id ? { ...o, status } : o))
+                setSelected({ ...selected, status })
+            } else {
+                toast.error(data.message)
+            }
+        } catch (error) {
+            toast.error(error.message)
+        }
+    }
+
     if (loading) return <Loading />
 
     return (
@@ -99,6 +122,21 @@ export default function AdminOrders() {
                                     {selected.isPaid ? '✓ Paid' : '⏳ Pending'}
                                 </p>
                             </div>
+                        </div>
+
+                        <div className="mb-4">
+                            <label className="text-xs text-slate-400 mb-1 block">Update Status</label>
+                            <select 
+                                value={selected.status} 
+                                onChange={(e) => updateOrderStatus(e.target.value)}
+                                className="w-full border border-slate-300 rounded-lg p-2 text-sm focus:ring-2 focus:ring-indigo-500"
+                            >
+                                <option value="ORDER_PLACED">Order Placed</option>
+                                <option value="PROCESSING">Processing</option>
+                                <option value="SHIPPED">Shipped</option>
+                                <option value="DELIVERED">Delivered</option>
+                                <option value="CANCELLED">Cancelled</option>
+                            </select>
                         </div>
 
                         {selected.address && (

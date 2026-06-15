@@ -64,7 +64,7 @@ export default function StoreAddProduct() {
                     category: "",
                 });
                 setImages({ 1: null, 2: null, 3: null, 4: null });
-                router.push('/store/manage-product');
+                router.push('/admin/inventory');
                 return "Product added successfully";
             } else {
                 throw new Error(res.message || "Failed to add product");

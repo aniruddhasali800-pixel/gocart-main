@@ -82,42 +82,6 @@ router.get('/:id', async (req, res) => {
     }
 });
 
-// ─── POST /api/products ────────────────────────────────────────
-// Seller: add a new product
-router.post('/', requireSeller, async (req, res) => {
-    try {
-        const { name, description, mrp, price, images, category } = req.body;
 
-        const product = await Product.create({
-            name, description, mrp, price,
-            images: images || [],
-            category,
-            storeId: req.storeId,
-        });
-
-        const obj = product.toObject();
-        obj.id = obj._id.toString();
-
-        res.status(201).json({ success: true, message: 'Product added successfully', product: obj });
-    } catch (error) {
-        res.status(400).json({ success: false, message: error.message });
-    }
-});
-
-// ─── PATCH /api/products/:id/toggle-stock ─────────────────────
-// Seller: toggle inStock
-router.patch('/:id/toggle-stock', requireSeller, async (req, res) => {
-    try {
-        const product = await Product.findOne({ _id: req.params.id, storeId: req.storeId });
-        if (!product) return res.status(404).json({ success: false, message: 'Product not found' });
-
-        product.inStock = !product.inStock;
-        await product.save();
-
-        res.json({ success: true, message: `Stock ${product.inStock ? 'enabled' : 'disabled'}`, inStock: product.inStock });
-    } catch (error) {
-        res.status(500).json({ success: false, message: error.message });
-    }
-});
 
 export default router;
