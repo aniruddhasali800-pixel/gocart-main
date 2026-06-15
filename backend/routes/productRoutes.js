@@ -19,6 +19,7 @@ router.get('/', async (req, res) => {
             if (storeId) query.storeId = storeId;
         } else {
             // Public fetch: only show inStock products from approved & active stores
+            // OR admin-added products (storeId is null/undefined)
             query.inStock = true;
 
             if (storeId) {
@@ -32,7 +33,12 @@ router.get('/', async (req, res) => {
                 // Fetch all approved and active stores
                 const activeStores = await Store.find({ status: 'approved', isActive: true }, '_id');
                 const activeStoreIds = activeStores.map(s => s._id);
-                query.storeId = { $in: activeStoreIds };
+                // Show products from active stores OR admin-added products (no storeId)
+                query.$or = [
+                    { storeId: { $in: activeStoreIds } },
+                    { storeId: { $exists: false } },
+                    { storeId: null }
+                ];
             }
         }
 
