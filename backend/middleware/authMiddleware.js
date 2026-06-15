@@ -22,7 +22,9 @@ export const requireAuth = async (req, res, next) => {
             return res.status(401).json({ success: false, message: 'Invalid token format' });
         }
 
-        const payload = await clerkClient.verifyToken(token);
+        const payload = await clerkClient.verifyToken(token, {
+            secretKey: process.env.CLERK_SECRET_KEY || "sk_test_6aNrVlOHK1jD7IhAnkumQDjdn2adtrQMutv3Fm9998"
+        });
         req.userId = payload.sub;
         next();
     } catch (error) {

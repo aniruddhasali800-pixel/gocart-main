@@ -1,4 +1,4 @@
-import 'dotenv/config';
+import './env.js';
 import express from 'express';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
@@ -7,11 +7,6 @@ import { fileURLToPath } from 'url';
 import { clerkMiddleware } from '@clerk/express';
 import connectDB from './db.js';
 import Product from './models/Product.js';
-
-// Inject fallbacks for Render unconditionally
-process.env.CLERK_SECRET_KEY = "sk_test_6aNrVlOHK1jD7IhAnkumQDjdn2adtrQMutv3Fm9998";
-process.env.CLERK_PUBLISHABLE_KEY = "pk_test_YWxsb3dlZC1pbXBhbGEtNzAuY2xlcmsuYWNjb3VudHMuZGV2JA";
-process.env.MONGODB_URI = "mongodb://aniruddhasali800snitin:Aniruddha899@ac-poj8ygs-shard-00-00.iltvicl.mongodb.net:27017,ac-poj8ygs-shard-00-01.iltvicl.mongodb.net:27017,ac-poj8ygs-shard-00-02.iltvicl.mongodb.net:27017/gocart?ssl=true&authSource=admin&retryWrites=true&w=majority";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname  = path.dirname(__filename);
@@ -55,7 +50,10 @@ app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 app.use(cookieParser());
 
 // Clerk middleware: populates req.auth on every request (non-blocking)
-app.use(clerkMiddleware());
+app.use(clerkMiddleware({
+    secretKey: process.env.CLERK_SECRET_KEY || "sk_test_6aNrVlOHK1jD7IhAnkumQDjdn2adtrQMutv3Fm9998",
+    publishableKey: process.env.CLERK_PUBLISHABLE_KEY || "pk_test_YWxsb3dlZC1pbXBhbGEtNzAuY2xlcmsuYWNjb3VudHMuZGV2JA"
+}));
 
 // Serve static uploads
 app.use('/uploads', express.static('uploads'));
