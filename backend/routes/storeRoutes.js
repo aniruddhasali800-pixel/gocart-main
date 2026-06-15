@@ -2,10 +2,10 @@ import express from 'express';
 import Store from '../models/Store.js';
 import { requireAuth } from '../middleware/authMiddleware.js';
 import { requireAdminJWT } from './adminAuthRoutes.js';
-import { createClerkClient } from '@clerk/clerk-sdk-node';
+import { clerkClient } from '@clerk/express';
 
 const router = express.Router();
-const clerk  = createClerkClient({ secretKey: process.env.CLERK_SECRET_KEY });
+
 
 // ─── GET /api/stores ───────────────────────────────────────────
 // Admin: list all stores
@@ -17,7 +17,7 @@ router.get('/', requireAdminJWT, async (req, res) => {
             obj.id = obj._id.toString();
 
             try {
-                const clerkUser = await clerk.users.getUser(s.userId);
+                const clerkUser = await clerkClient.users.getUser(s.userId);
                 obj.user = {
                     name:  `${clerkUser.firstName || ''} ${clerkUser.lastName || ''}`.trim() || 'No Name',
                     email: clerkUser.emailAddresses?.[0]?.emailAddress || 'No Email',

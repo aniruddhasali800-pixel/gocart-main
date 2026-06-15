@@ -1,19 +1,29 @@
-import { createClerkClient } from '@clerk/clerk-sdk-node';
-
-const clerk = createClerkClient({ secretKey: process.env.CLERK_SECRET_KEY });
+import { clerkClient } from '@clerk/express';
 
 // ─── Verify any authenticated user ────────────────────────────
+// With @clerk/express, clerkMiddleware() is applied globally in server.js.
+// It populates req.auth automatically. We just read req.auth.userId.
 export const requireAuth = async (req, res, next) => {
     try {
+        const userId = req.auth?.userId;
+        if (userId) {
+            req.userId = userId;
+            return next();
+        }
+
+        // Fallback: manual Bearer token verification via clerkClient
         const authHeader = req.headers.authorization;
         if (!authHeader || !authHeader.startsWith('Bearer ')) {
             return res.status(401).json({ success: false, message: 'No token provided' });
         }
 
         const token = authHeader.split(' ')[1];
-        const payload = await clerk.verifyToken(token);
+        if (!token || typeof token !== 'string') {
+            return res.status(401).json({ success: false, message: 'Invalid token format' });
+        }
 
-        req.userId = payload.sub; // Clerk user ID
+        const payload = await clerkClient.verifyToken(token);
+        req.userId = payload.sub;
         next();
     } catch (error) {
         console.error('Auth error:', error.message);
