@@ -5,6 +5,7 @@ import { toast } from "react-hot-toast"
 import Image from "next/image"
 import Loading from "@/components/Loading"
 import Price from "@/components/Price"
+import { Trash2 } from "lucide-react"
 
 export default function StoreManageProducts() {
 
@@ -29,6 +30,21 @@ export default function StoreManageProducts() {
         }
     }
 
+    const deleteProduct = async (productId) => {
+        const confirmDelete = window.confirm("Are you sure you want to delete this product?");
+        if (!confirmDelete) return;
+        
+        try {
+            const data = await api.deleteProduct(productId);
+            if (data.success) {
+                setProducts(products.filter(p => p.id !== productId));
+                toast.success("Product deleted successfully");
+            }
+        } catch (error) {
+            toast.error(error.message);
+        }
+    }
+
     useEffect(() => {
             fetchProducts()
     }, [])
@@ -47,7 +63,7 @@ export default function StoreManageProducts() {
                         <th className="px-4 py-3 hidden md:table-cell">Description</th>
                         <th className="px-4 py-3 hidden md:table-cell">MRP</th>
                         <th className="px-4 py-3">Price</th>
-                        <th className="px-4 py-3">Actions</th>
+                        <th className="px-4 py-3 text-center">Actions</th>
                     </tr>
                 </thead>
                 <tbody className="text-slate-700">
@@ -62,12 +78,21 @@ export default function StoreManageProducts() {
                             <td className="px-4 py-3 max-w-md text-slate-600 hidden md:table-cell truncate">{product.description}</td>
                             <td className="px-4 py-3 hidden md:table-cell"><Price value={product.mrp} /></td>
                             <td className="px-4 py-3"><Price value={product.price} /></td>
-                            <td className="px-4 py-3 text-center">
-                                <label className="relative inline-flex items-center cursor-pointer text-gray-900 gap-3">
-                                    <input type="checkbox" className="sr-only peer" onChange={() => toast.promise(toggleStock(product.id), { loading: "Updating data..." })} checked={product.inStock} />
-                                    <div className="w-9 h-5 bg-slate-300 rounded-full peer peer-checked:bg-green-600 transition-colors duration-200"></div>
-                                    <span className="dot absolute left-1 top-1 w-3 h-3 bg-white rounded-full transition-transform duration-200 ease-in-out peer-checked:translate-x-4"></span>
-                                </label>
+                            <td className="px-4 py-3">
+                                <div className="flex items-center justify-center gap-4">
+                                    <label className="relative inline-flex items-center cursor-pointer text-gray-900">
+                                        <input type="checkbox" className="sr-only peer" onChange={() => toast.promise(toggleStock(product.id), { loading: "Updating data..." })} checked={product.inStock} />
+                                        <div className="w-9 h-5 bg-slate-300 rounded-full peer peer-checked:bg-green-600 transition-colors duration-200"></div>
+                                        <span className="dot absolute left-1 top-1 w-3 h-3 bg-white rounded-full transition-transform duration-200 ease-in-out peer-checked:translate-x-4"></span>
+                                    </label>
+                                    <button
+                                        onClick={() => deleteProduct(product.id)}
+                                        className="text-red-500 hover:text-red-700 active:scale-95 transition cursor-pointer"
+                                        title="Delete Product"
+                                    >
+                                        <Trash2 className="w-5 h-5" />
+                                    </button>
+                                </div>
                             </td>
                         </tr>
                     ))}
