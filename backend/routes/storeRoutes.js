@@ -2,7 +2,6 @@ import express from 'express';
 import Store from '../models/Store.js';
 import { requireAuth } from '../middleware/authMiddleware.js';
 import { requireAdminJWT } from './adminAuthRoutes.js';
-import { clerkClient } from '@clerk/express';
 
 const router = express.Router();
 
@@ -16,20 +15,11 @@ router.get('/', requireAdminJWT, async (req, res) => {
             const obj = s.toObject();
             obj.id = obj._id.toString();
 
-            try {
-                const clerkUser = await clerkClient.users.getUser(s.userId);
-                obj.user = {
-                    name:  `${clerkUser.firstName || ''} ${clerkUser.lastName || ''}`.trim() || 'No Name',
-                    email: clerkUser.emailAddresses?.[0]?.emailAddress || 'No Email',
-                    image: clerkUser.imageUrl || 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
-                };
-            } catch {
-                obj.user = {
-                    name:  'Unknown Seller',
-                    email: s.email || 'No Email',
-                    image: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
-                };
-            }
+            obj.user = {
+                name:  'Unknown Seller',
+                email: s.email || 'No Email',
+                image: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
+            };
 
             return obj;
         }));
