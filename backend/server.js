@@ -51,8 +51,8 @@ app.use(cookieParser());
 
 // Clerk middleware: populates req.auth on every request (non-blocking)
 app.use(clerkMiddleware({
-    secretKey: process.env.CLERK_SECRET_KEY || "sk_test_6aNrVlOHK1jD7IhAnkumQDjdn2adtrQMutv3Fm9998",
-    publishableKey: process.env.CLERK_PUBLISHABLE_KEY || "pk_test_YWxsb3dlZC1pbXBhbGEtNzAuY2xlcmsuYWNjb3VudHMuZGV2JA"
+    secretKey: process.env.CLERK_SECRET_KEY || "sk_test_aDTvGHXAx0llwqHbDJ0DNX9FC4JpXvlFCMTNPZc3Yz",
+    publishableKey: process.env.CLERK_PUBLISHABLE_KEY || "pk_test_ZGVjaWRpbmctZG9nZmlzaC00MC5jbGVyay5hY2NvdW50cy5kZXYk"
 }));
 
 // Serve static uploads

@@ -1,7 +1,5 @@
 import { clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server';
 
-import { NextResponse } from 'next/server';
-
 // Define protected routes
 const isProtectedRoute = createRouteMatcher([
     '/cart(.*)',
@@ -10,15 +8,14 @@ const isProtectedRoute = createRouteMatcher([
     '/admin(.*)',
 ]);
 
-const middleware = clerkMiddleware(async (auth, req) => {
+export default clerkMiddleware(async (auth, req) => {
     if (isProtectedRoute(req)) {
         await auth.protect();
     }
+}, {
+    secretKey: process.env.CLERK_SECRET_KEY || "sk_test_aDTvGHXAx0llwqHbDJ0DNX9FC4JpXvlFCMTNPZc3Yz",
+    publishableKey: process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY || "pk_test_ZGVjaWRpbmctZG9nZmlzaC00MC5jbGVyay5hY2NvdW50cy5kZXYk"
 });
-
-export function proxy(request, event) {
-    return middleware(request, event);
-}
 
 export const config = {
     matcher: [
