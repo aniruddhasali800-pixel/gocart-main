@@ -3,11 +3,9 @@ import { usePathname } from "next/navigation"
 import { HomeIcon, ShieldCheckIcon, StoreIcon, TicketPercentIcon, ClipboardListIcon, X, UsersIcon, ShoppingBasketIcon } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
-import { UserButton, useUser } from "@clerk/nextjs"
 
 const AdminSidebar = ({ isOpen, onClose }) => {
     const pathname = usePathname()
-    const { user } = useUser()
 
     const sidebarLinks = [
         { name: 'Dashboard',    href: '/admin',          icon: HomeIcon },
@@ -38,13 +36,9 @@ const AdminSidebar = ({ isOpen, onClose }) => {
 
                 <div className="flex flex-col gap-3 justify-center items-center pt-8">
                     <div className="w-14 h-14 rounded-full bg-indigo-100 flex items-center justify-center overflow-hidden">
-                        {user?.imageUrl ? (
-                            <Image src={user.imageUrl} alt="" className="w-full h-full object-cover" width={56} height={56} />
-                        ) : (
-                            <span className="text-xl font-bold text-indigo-600">{user?.firstName?.[0] || 'A'}</span>
-                        )}
+                        <span className="text-xl font-bold text-indigo-600">A</span>
                     </div>
-                    <p className="text-slate-700 text-sm">Hi, {user?.firstName || 'Admin'}</p>
+                    <p className="text-slate-700 text-sm">Hi, Admin</p>
                 </div>
 
                 <div className="mt-2 flex-1 overflow-y-auto">
@@ -59,7 +53,7 @@ const AdminSidebar = ({ isOpen, onClose }) => {
 
                 {/* Sign out at bottom */}
                 <div className="mt-auto mb-6 flex justify-center">
-                    <UserButton afterSignOutUrl="/" />
+                    <Link href="/" className="text-slate-500 hover:text-slate-700 text-sm">Return to Store</Link>
                 </div>
             </div>
         </>

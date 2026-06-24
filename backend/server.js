@@ -4,7 +4,6 @@ import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { clerkMiddleware } from '@clerk/express';
 import connectDB from './db.js';
 import Product from './models/Product.js';
 
@@ -49,11 +48,7 @@ app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 app.use(cookieParser());
 
-// Clerk middleware: populates req.auth on every request (non-blocking)
-app.use(clerkMiddleware({
-    secretKey: process.env.CLERK_SECRET_KEY || "sk_test_aDTvGHXAx0llwqHbDJ0DNX9FC4JpXvlFCMTNPZc3Yz",
-    publishableKey: process.env.CLERK_PUBLISHABLE_KEY || "pk_test_ZGVjaWRpbmctZG9nZmlzaC00MC5jbGVyay5hY2NvdW50cy5kZXYk"
-}));
+// Clerk middleware removed
 
 // Serve static uploads
 app.use('/uploads', express.static('uploads'));

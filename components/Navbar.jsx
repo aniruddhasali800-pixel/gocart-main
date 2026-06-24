@@ -6,11 +6,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import CurrencySelector from "@/components/CurrencySelector";
-import {
-    useAuth,
-    useClerk,
-    UserButton,
-} from "@clerk/nextjs";
+
 import api from "@/lib/api";
 import toast from "react-hot-toast";
 import { useCustomize } from "@/components/CustomizeProvider";
@@ -18,11 +14,9 @@ import { useCustomize } from "@/components/CustomizeProvider";
 const Navbar = () => {
 
     const router = useRouter();
-    const { openSignIn, openSignUp } = useClerk();
 
     const [search, setSearch] = useState('')
     const cartCount = useSelector(state => state.cart.total)
-    const { isSignedIn } = useAuth();
     const { logo } = useCustomize();
 
     // Mobile menu state
@@ -64,25 +58,10 @@ const Navbar = () => {
 
                         <CurrencySelector />
 
-                        {/* Auth Buttons */}
-                        {!isSignedIn && (
-                            <div className="flex gap-1 items-center">
-                                <button onClick={() => openSignIn()} className="px-3 py-1 text-sm hover:bg-slate-100 transition text-slate-700 rounded-full font-medium whitespace-nowrap">
-                                    Login
-                                </button>
-                                <button onClick={() => openSignUp()} className="px-4 py-1 text-sm bg-indigo-500 hover:bg-indigo-600 transition text-white rounded-full whitespace-nowrap">
-                                    Sign Up
-                                </button>
-                            </div>
-                        )}
-                        {isSignedIn && (
-                            <div className="flex items-center gap-3">
-                                <UserButton
-                                    appearance={{ elements: { avatarBox: "w-9 h-9" } }}
-                                    afterSignOutUrl="/"
-                                />
-                            </div>
-                        )}
+                        {/* User Dashboard Link */}
+                        <Link href="/orders" className="flex items-center justify-center p-2 rounded-full hover:bg-slate-100 transition text-slate-600">
+                            <User size={20} />
+                        </Link>
                     </div>
 
                     {/* Mobile Buttons */}
@@ -92,16 +71,9 @@ const Navbar = () => {
                             <ShoppingCart size={20} />
                             <button className="absolute -top-1 -right-1 text-[9px] font-bold text-white bg-slate-600 size-4 rounded-full flex items-center justify-center">{cartCount}</button>
                         </Link>
-                        {!isSignedIn && (
-                            <button onClick={() => openSignIn()} className="px-3 py-1.5 hover:bg-slate-100 text-sm transition text-slate-700 rounded-full font-medium">
-                                Login
-                            </button>
-                        )}
-                        {isSignedIn && (
-                            <div className="flex items-center gap-2">
-                                <UserButton afterSignOutUrl="/" />
-                            </div>
-                        )}
+                        <Link href="/orders" className="p-1 text-slate-600 hover:bg-slate-100 rounded-lg transition-colors">
+                            <User size={24} />
+                        </Link>
                         <button onClick={() => setIsMobileMenuOpen(true)} className="p-1 text-slate-600 hover:bg-slate-100 rounded-lg transition-colors ml-1">
                             <Menu size={24} />
                         </button>

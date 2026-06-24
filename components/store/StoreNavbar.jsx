@@ -1,11 +1,9 @@
 'use client'
 import Link from "next/link"
 import Image from "next/image"
-import { UserButton, useUser } from "@clerk/nextjs"
 import { Menu } from "lucide-react"
 
 const StoreNavbar = ({ onMenuClick }) => {
-    const { user } = useUser()
 
     return (
         <div className="flex items-center justify-between px-4 sm:px-6 py-2 border-b border-slate-200 transition-all bg-white">
@@ -21,8 +19,8 @@ const StoreNavbar = ({ onMenuClick }) => {
                 </Link>
             </div>
             <div className="flex items-center gap-3 text-sm text-slate-600">
-                <span>Hi, {user?.firstName || 'Seller'}</span>
-                <UserButton afterSignOutUrl="/" />
+                <span>Hi, Seller</span>
+                <Link href="/" className="px-3 py-1 bg-slate-100 hover:bg-slate-200 rounded-full text-xs font-medium transition">Exit Store</Link>
             </div>
         </div>
     )
